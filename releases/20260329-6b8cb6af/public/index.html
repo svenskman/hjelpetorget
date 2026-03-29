@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<!-- VERSION: 0.2.0 -->
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hjelpetorget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FAF6F0;--warm:#F2EAE0;--brown:#5C3D2E;--terra:#C4613B;--sage:#6A8C6F;--sky:#4A7FA5;--text:#2C1810;--muted:#8A7060;--border:#DDD5C8;--white:#fff;--r:10px;--shadow:0 2px 12px rgba(92,61,46,.10);--shadow-lg:0 8px 32px rgba(92,61,46,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+h1,h2,h3{font-family:'Fraunces',serif}
+a{color:var(--terra);text-decoration:none}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.logo{font-family:'Fraunces',serif;font-size:1.4rem;color:var(--brown);font-weight:700;cursor:pointer}
+.logo span{color:var(--terra)}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-size:.88rem;font-weight:600;transition:.15s;cursor:pointer}
+.btn-primary{background:var(--terra);color:#fff}.btn-primary:hover{background:#a84e2d}
+.btn-ghost{background:transparent;color:var(--brown);border:1.5px solid var(--border)}.btn-ghost:hover{background:var(--warm)}
+.btn-sage{background:var(--sage);color:#fff}.btn-sage:hover{background:#527057}
+.btn-sm{padding:5px 12px;font-size:.82rem}
+#nav-chips{display:flex;gap:8px;overflow-x:auto;padding:12px 24px;background:var(--white);border-bottom:1px solid var(--border);scrollbar-width:none}
+#nav-chips::-webkit-scrollbar{display:none}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:.85rem;cursor:pointer;white-space:nowrap;transition:.15s;font-family:'DM Sans',sans-serif}
+.chip:hover{border-color:var(--terra);color:var(--terra)}
+.chip.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+#main{max-width:1200px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:200px 1fr 280px;gap:20px}
+@media(max-width:1024px){#main{grid-template-columns:180px 1fr}#sidebar{display:none}}
+@media(max-width:768px){#main{grid-template-columns:1fr}#loc-panel{display:none}#sidebar{display:none}}
+.loc-fylke{padding:4px 8px;border-radius:6px;cursor:pointer;font-size:.83rem;display:flex;justify-content:space-between;align-items:center}
+.loc-fylke:hover{background:var(--warm)}.loc-fylke.active{background:var(--terra);color:#fff;font-weight:600}
+.loc-kommune{padding:2px 8px 2px 16px;border-radius:4px;cursor:pointer;font-size:.78rem;color:var(--muted)}
+.loc-kommune:hover{background:var(--warm);color:var(--text)}.loc-kommune.active{color:var(--terra);font-weight:600}
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow);padding:20px;border:1px solid var(--border)}
+.post-card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:18px 20px;transition:.15s;cursor:pointer;margin-bottom:12px}
+.post-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-offer{background:#EBF5EC;color:#2D7A36}.badge-request{background:#FEF0E8;color:#C4613B}
+.cat-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:.75rem;background:var(--warm);color:var(--brown)}
+.post-footer{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:.8rem;color:var(--muted)}
+.avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--warm);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--brown);font-size:.8rem;flex-shrink:0}
+#search-bar{display:flex;gap:10px;margin-bottom:20px}
+#search-bar input{flex:1;padding:10px 16px;border-radius:8px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.95rem;background:var(--white)}
+#search-bar input:focus{outline:none;border-color:var(--terra)}
+#type-toggle{display:flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:var(--white)}
+#type-toggle button{padding:8px 14px;border:none;background:transparent;font-size:.85rem;font-weight:600;cursor:pointer;color:var(--muted);transition:.15s}
+#type-toggle button.active{background:var(--terra);color:#fff}
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(44,24,16,.45);z-index:200;align-items:center;justify-content:center;padding:20px}
+#modal-overlay.open{display:flex}
+#modal{background:var(--white);border-radius:16px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+#modal-head{padding:20px 24px 0;display:flex;align-items:center;justify-content:space-between}
+#modal-close{background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--muted);line-height:1}
+#modal-body{padding:20px 24px 28px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.85rem;font-weight:600;margin-bottom:5px;color:var(--brown)}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:9px 13px;border-radius:8px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:.93rem;background:var(--white);transition:.15s}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--terra)}
+.form-group textarea{resize:vertical;min-height:90px}
+.form-err{color:#C0392B;font-size:.83rem;margin-top:6px}
+.radio-group{display:flex;gap:10px}
+.radio-group label{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:.15s;text-align:center;font-size:.9rem}
+.radio-group label.active{border-color:var(--terra);background:#FEF0E8;color:var(--terra)}
+.tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:8px 16px;border:none;background:none;font-size:.88rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s;font-family:'DM Sans',sans-serif}
+.tab.active{color:var(--terra);border-bottom-color:var(--terra)}
+.stars{color:#F0A500;letter-spacing:1px}
+#chat-messages{height:320px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px}
+.msg-bubble{max-width:72%;padding:8px 12px;border-radius:12px;font-size:.88rem;line-height:1.5}
+.msg-bubble.mine{align-self:flex-end;background:var(--terra);color:#fff;border-bottom-right-radius:3px}
+.msg-bubble.theirs{align-self:flex-start;background:var(--warm);border-bottom-left-radius:3px}
+.conv-item{display:flex;gap:12px;align-items:center;padding:10px;border-radius:8px;cursor:pointer;transition:.15s}
+.conv-item:hover,.conv-item.active{background:var(--warm)}
+#pagination{display:flex;justify-content:center;gap:8px;margin-top:24px}
+#pagination button{padding:6px 14px;border-radius:6px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-size:.85rem}
+#pagination button.active,#pagination button:hover{background:var(--terra);color:#fff;border-color:var(--terra)}
+.stat-row{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border:none}
+.stat-row strong{color:var(--terra)}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--brown);color:#fff;padding:10px 22px;border-radius:20px;font-size:.9rem;opacity:0;pointer-events:none;transition:.3s;z-index:999}
+#toast.show{opacity:1}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--terra);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Admin */
+.admin-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.admin-stat{text-align:center;padding:16px}.admin-stat .val{font-size:1.8rem;font-weight:700;color:var(--terra)}.admin-stat .lbl{font-size:.8rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{background:var(--warm);padding:10px 14px;text-align:left;color:var(--muted);font-size:.75rem;font-weight:600;letter-spacing:.05em}
+td{padding:10px 14px;border-top:1px solid var(--border)}
+tr:hover td{background:var(--cream)}
+.flag-reason{font-size:.72rem;font-family:monospace;background:var(--warm);border:1px solid var(--border);border-radius:4px;padding:1px 6px;margin:1px}
+/* Update banner */
+#update-banner{display:none;background:linear-gradient(90deg,var(--sage),#4a7a50);color:#fff;padding:12px 24px;text-align:center;font-size:.9rem;gap:12px;align-items:center;justify-content:center}
+#update-banner.show{display:flex}
+</style>
+</head>
+<body>
+
+<div id="update-banner">
+  <span id="update-text"></span>
+  <button class="btn btn-sm" style="background:#fff;color:var(--sage)" onclick="applyUpdate()">✅ Oppdater nå</button>
+  <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff" onclick="openVersionHistory()">📋 Versjonshistorikk</button>
+  <button onclick="document.getElementById('update-banner').classList.remove('show')" style="background:none;border:none;color:#fff;cursor:pointer;font-size:1.2rem">×</button>
+</div>
+
+<div id="topbar">
+  <div class="logo" onclick="showView('home')">Hjelpe<span>torget</span></div>
+  <div class="spacer"></div>
+  <div id="auth-buttons" style="display:flex;gap:8px">
+    <button class="btn btn-ghost btn-sm" onclick="openModal('login')">Logg inn</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('register')">Registrer deg</button>
+  </div>
+  <div id="user-menu" style="display:none;gap:8px;align-items:center">
+    <button class="btn btn-sage btn-sm" onclick="openModal('new-post')">+ Ny annonse</button>
+    <button class="btn btn-ghost btn-sm" onclick="showView('messages')">💬</button>
+    <button class="btn btn-ghost btn-sm" id="admin-btn" style="display:none" onclick="showView('admin')">⚙️ Admin</button>
+    <button class="btn btn-ghost btn-sm" onclick="toggleUserMenu()" id="user-btn">…</button>
+    <div id="user-dropdown" style="display:none;position:absolute;right:20px;top:60px;background:var(--white);border:1.5px solid var(--border);border-radius:10px;box-shadow:var(--shadow-lg);min-width:160px;z-index:200;overflow:hidden">
+      <div onclick="showView('profile-me');closeUserMenu()" style="padding:10px 16px;cursor:pointer;font-size:.88rem;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--warm)'" onmouseout="this.style.background=''">👤 Min profil</div>
+      <div id="dd-admin-timer" style="display:none;padding:8px 16px;font-size:.78rem;color:var(--sage);border-bottom:1px solid var(--border);background:#f0faf0">🔐 Admin utløper: <span id="dd-timer-val"></span></div>
+      <div id="dd-req-admin" style="display:none;padding:10px 16px;cursor:pointer;font-size:.88rem;border-bottom:1px solid var(--border)" onclick="openRequestAdmin();closeUserMenu()" onmouseover="this.style.background='var(--warm)'" onmouseout="this.style.background=''">🔐 Be om admin-tilgang</div>
+      <div id="dd-lab-admin" style="display:none;padding:8px 16px;font-size:.78rem;color:var(--sage);border-bottom:1px solid var(--border);background:#f0faf0">🧪 Lab – full admin alltid aktiv</div>
+      <div onclick="logout();closeUserMenu()" style="padding:10px 16px;cursor:pointer;font-size:.88rem;color:#C0392B" onmouseover="this.style.background='var(--warm)'" onmouseout="this.style.background=''">🚪 Logg ut</div>
+    </div>
+  </div>
+</div>
+
+<div id="nav-chips">
+  <div class="chip active" data-slug="" onclick="filterCat(this,'')">🏘️ Alle</div>
+</div>
+
+<div id="main" style="grid-template-columns:200px 1fr 300px">
+  <div id="loc-panel" class="card" style="padding:12px;align-self:start">
+    <div style="font-size:.75rem;font-weight:700;color:var(--muted);letter-spacing:.05em;margin-bottom:10px">📍 OMRÅDE</div>
+    <div id="loc-filter-list"></div>
+  </div>
+  <div id="content"><div style="display:flex;justify-content:center;padding:60px"><div class="spinner"></div></div></div>
+  <div id="sidebar">
+    <div class="card" id="stats-card">
+      <h3 style="font-size:1rem;margin-bottom:12px">📊 Statistikk</h3>
+      <div id="stats-body"><div class="spinner"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h3 style="font-size:1rem;margin-bottom:8px">🤝 Om Hjelpetorget</h3>
+      <p style="font-size:.85rem;color:var(--muted);line-height:1.6">En gratis tjeneste der naboer hjelper naboer. Tilby din tid eller be om hjelp – helt uforpliktende.</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-overlay" onclick="closeModalOverlay(event)">
+  <div id="modal">
+    <div id="modal-head">
+      <h2 id="modal-title" style="font-size:1.2rem"></h2>
+      <button id="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── App version ──────────────────────────────────────────────────────────────
+var APP_VERSION = '0.2.0';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var state = {
+  user: null,
+  categories: [],
+  view: 'home',
+  filter: { type: '', category: '', q: '', page: 1 },
+  convInterval: null,
+  activeConvId: null,
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function e(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function timeAgo(ts) {
+  var d = Math.floor(Date.now()/1000) - ts;
+  if (d < 60) return 'Nå nettopp';
+  if (d < 3600) return Math.floor(d/60) + ' min siden';
+  if (d < 86400) return Math.floor(d/3600) + ' t siden';
+  if (d < 604800) return Math.floor(d/86400) + ' d siden';
+  return new Date(ts*1000).toLocaleDateString('no');
+}
+
+function avatarEl(avatar, name, size) {
+  size = size || 32;
+  var initials = (name||'?').split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+  if (avatar) return '<img src="/avatars/' + avatar + '" style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;object-fit:cover" loading="lazy">';
+  return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:var(--warm);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--brown);font-size:' + Math.max(10,size*.35) + 'px;flex-shrink:0">' + initials + '</div>';
+}
+
+function toast(msg, err) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = err ? '#C0392B' : 'var(--brown)';
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 3000);
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function api(method, path, body, isForm) {
+  var opts = { method: method, credentials: 'same-origin' };
+  if (body && !isForm) { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(body); }
+  else if (isForm) { opts.body = body; }
+  var r = await fetch('/api' + path, opts);
+  var d = await r.json().catch(function(){ return {}; });
+  if (!r.ok) throw new Error(d.error || 'Feil ' + r.status);
+  return d;
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+async function boot() {
+  var params = new URLSearchParams(location.search);
+  if (params.get('verified')) toast('E-post bekreftet! Du kan nå logge inn.');
+  if (params.get('reset')) openModal('reset-password', params.get('reset'));
+  if (params.get('error')) toast('Ugyldig eller utløpt lenke.', true);
+  await loadCategories();
+  await checkSession();
+  showView('home');
+  loadStats();
+  loadLocFilter();
+}
+
+async function loadLocFilter() {
+  var el = document.getElementById('loc-filter-list');
+  if (!el) return;
+  var counts = {};
+  try { counts = await api('GET', '/posts/meta/locations'); } catch {}
+  renderLocFilter(counts);
+}
+
+function renderLocFilter(counts) {
+  var el = document.getElementById('loc-filter-list');
+  if (!el) return;
+  var parts = [];
+  var allActive = !_locFilter.fylke;
+  parts.push('<div class="loc-fylke' + (allActive ? ' active' : '') + '" onclick="setFylke(this)">🌍 Alle områder</div>');
+  for (var slug in NORWAY) {
+    var data = NORWAY[slug];
+    var cnt = counts[slug];
+    var isActive = _locFilter.fylke === slug;
+    parts.push('<div class="loc-fylke' + (isActive ? ' active' : '') + '" data-slug="' + slug + '" onclick="toggleFylke(this)">' + data.name + (cnt ? '<span style="font-size:.72rem;background:rgba(0,0,0,.08);padding:1px 5px;border-radius:8px">' + cnt.count + '</span>' : '') + '</div>');
+    if (isActive && data.kommuner.length) {
+      parts.push('<div style="margin:2px 0 4px">');
+      data.kommuner.forEach(function(k) {
+        var kCnt = cnt && cnt.kommuner && cnt.kommuner[k];
+        var kActive = _locFilter.kommune === k;
+        parts.push('<div class="loc-kommune' + (kActive ? ' active' : '') + '" data-k="' + k.replace(/"/g, '&quot;') + '" onclick="setKommune(this)">' + k + (kCnt ? ' <span style="font-size:.7rem">(' + kCnt + ')</span>' : '') + '</div>');
+      });
+      parts.push('</div>');
+    }
+  }
+  el.innerHTML = parts.join('');
+}
+
+function toggleFylke(el) {
+  var slug = el.getAttribute('data-slug');
+  _locFilter.fylke = _locFilter.fylke === slug ? '' : slug;
+  _locFilter.kommune = '';
+  state.filter.page = 1;
+  loadLocFilter();
+  if (state.view === 'home') renderHome();
+}
+
+function setFylke(el) {
+  _locFilter.fylke = ''; _locFilter.kommune = '';
+  state.filter.page = 1;
+  loadLocFilter();
+  if (state.view === 'home') renderHome();
+}
+
+function setKommune(el) {
+  var k = el.getAttribute('data-k');
+  _locFilter.kommune = _locFilter.kommune === k ? '' : k;
+  state.filter.page = 1;
+  loadLocFilter();
+  if (state.view === 'home') renderHome();
+}
+
+async function checkSession() {
+  try { var u = await api('GET', '/auth/me'); setUser(u); } catch {}
+}
+
+function setUser(user) {
+  state.user = user;
+  document.getElementById('auth-buttons').style.display = 'none';
+  document.getElementById('user-menu').style.display = 'flex';
+  document.getElementById('user-btn').textContent = user.name.split(' ')[0];
+  checkTrustStatus();
+  if (user.role === 'admin') {
+    document.getElementById('admin-btn').style.display = '';
+    checkForUpdate();
+    if (window._isLab) {
+      // Lab: full admin always, no request flow needed
+      document.getElementById('dd-req-admin').style.display = 'none';
+      document.getElementById('dd-admin-timer').style.display = 'none';
+      var labBadge = document.getElementById('dd-lab-admin');
+      if (labBadge) labBadge.style.display = '';
+    } else {
+      // Prod: show request button and timer
+      document.getElementById('dd-req-admin').style.display = '';
+      checkAdminSession();
+    }
+  }
+}
+
+function logout() {
+  api('POST', '/auth/logout').then(function(){
+    state.user = null;
+    document.getElementById('auth-buttons').style.display = 'flex';
+    document.getElementById('user-menu').style.display = 'none';
+    document.getElementById('admin-btn').style.display = 'none';
+    showView('home');
+    toast('Du er nå logget ut.');
+  });
+}
+
+function toggleUserMenu() {
+  var dd = document.getElementById('user-dropdown');
+  dd.style.display = dd.style.display === 'none' ? '' : 'none';
+}
+function closeUserMenu() { document.getElementById('user-dropdown').style.display = 'none'; }
+document.addEventListener('click', function(ev) {
+  if (!document.getElementById('user-btn').contains(ev.target) && !document.getElementById('user-dropdown').contains(ev.target)) closeUserMenu();
+});
+
+// ── Update banner ─────────────────────────────────────────────────────────────
+async function checkForUpdate() {
+  // Also detect if we're in lab mode
+  try {
+    var labStatus = await api('GET', '/lab/status').catch(function(){ return null; });
+    window._isLab = !!(labStatus && labStatus.isLab);
+  } catch {}
+  try {
+    var d = await api('GET', '/update/check');
+    if (d.available) {
+      var rel = d.releases && d.releases[0];
+      var cl  = rel && rel.changelog ? ' – ' + rel.changelog : '';
+      document.getElementById('update-text').textContent = '🆕 Ny versjon: ' + d.latest + cl;
+      document.getElementById('update-banner').classList.add('show');
+      window._updateData = d;
+    }
+  } catch {}
+}
+
+async function applyUpdate(version) {
+  var ver = version || (window._updateData && window._updateData.latest);
+  if (!confirm('Installere versjon ' + ver + '? Serveren restarter automatisk.')) return;
+  document.getElementById('update-text').textContent = '⏳ Laster ned ' + ver + '…';
+  try {
+    var d = await api('POST', '/update/apply', { version: ver });
+    document.getElementById('update-text').textContent = '✅ ' + d.message;
+    setTimeout(function(){ location.reload(); }, 8000);
+  } catch (err) {
+    document.getElementById('update-text').textContent = '❌ ' + err.message;
+    toast('Feil: ' + err.message, true);
+  }
+}
+
+// ── Categories ────────────────────────────────────────────────────────────────
+async function loadCategories() {
+  try {
+    state.categories = await api('GET', '/posts/meta/categories');
+    var chips = document.getElementById('nav-chips');
+    chips.innerHTML = '<div class="chip active" data-slug="" onclick="filterCat(this,\'\')">🏘️ Alle</div>';
+    state.categories.forEach(function(c) {
+      chips.innerHTML += '<div class="chip" data-slug="' + c.slug + '" onclick="filterCat(this,\'' + c.slug + '\')">' + c.icon + ' ' + e(c.name) + (c.count ? ' <span style="color:' + c.color + ';font-size:.75rem">' + c.count + '</span>' : '') + '</div>';
+    });
+  } catch {}
+}
+
+function filterCat(el, slug) {
+  document.querySelectorAll('#nav-chips .chip').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  state.filter.category = slug;
+  state.filter.page = 1;
+  if (state.view === 'home') renderHome();
+}
+
+async function loadStats() {
+  try {
+    var s = await api('GET', '/admin/stats');
+    document.getElementById('stats-body').innerHTML =
+      '<div class="stat-row"><span>Brukere</span><strong>' + s.users + '</strong></div>' +
+      '<div class="stat-row"><span>Aktive annonser</span><strong>' + s.posts + '</strong></div>' +
+      '<div class="stat-row"><span>Meldinger</span><strong>' + s.messages + '</strong></div>' +
+      '<div class="stat-row"><span>Vurderinger</span><strong>' + s.reviews + '</strong></div>';
+  } catch {
+    document.getElementById('stats-card').style.display = 'none';
+  }
+}
+
+// ── Views ─────────────────────────────────────────────────────────────────────
+async function showView(view, arg) {
+  state.view = view;
+  if (state.convInterval) { clearInterval(state.convInterval); state.convInterval = null; }
+  var content = document.getElementById('content');
+  content.innerHTML = '<div style="display:flex;justify-content:center;padding:40px"><div class="spinner"></div></div>';
+  if (view === 'home')       await renderHome();
+  else if (view === 'post' && arg)   await renderPost(arg);
+  else if (view === 'profile-me')    await renderProfile(state.user && state.user.id);
+  else if (view === 'profile' && arg) await renderProfile(arg);
+  else if (view === 'messages')      await renderMessages();
+  else if (view === 'admin')         await renderAdmin();
+}
+
+// ── Home ──────────────────────────────────────────────────────────────────────
+async function renderHome() {
+  var content = document.getElementById('content');
+  try {
+    var params = new URLSearchParams();
+    if (state.filter.type) params.set('type', state.filter.type);
+    if (state.filter.category) params.set('category', state.filter.category);
+    if (state.filter.q) params.set('q', state.filter.q);
+    if (_locFilter.fylke) params.set('fylke', _locFilter.fylke);
+    if (_locFilter.kommune) params.set('kommune', _locFilter.kommune);
+    params.set('page', state.filter.page);
+    var data = await api('GET', '/posts?' + params.toString());
+    var html = '<div id="search-bar">' +
+      '<input id="q-input" placeholder="🔍 Søk i annonser…" value="' + e(state.filter.q) + '" onkeydown="if(event.key===\'Enter\'){state.filter.q=this.value;state.filter.page=1;renderHome()}">' +
+      '<div id="type-toggle">' +
+      '<button onclick="setTypeFilter(\'\')" class="' + (!state.filter.type ? 'active' : '') + '">Alle</button>' +
+      '<button onclick="setTypeFilter(\'offer\')" class="' + (state.filter.type==='offer' ? 'active' : '') + '">Tilbud</button>' +
+      '<button onclick="setTypeFilter(\'request\')" class="' + (state.filter.type==='request' ? 'active' : '') + '">Søkes</button>' +
+      '</div></div>';
+    if (!data.posts.length) {
+      html += '<div class="card" style="text-align:center;padding:48px;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:12px">🔍</div><p>Ingen annonser funnet.</p>' + (state.user ? '<button class="btn btn-primary" style="margin-top:16px" onclick="openModal(\'new-post\')">+ Ny annonse</button>' : '') + '</div>';
+    } else {
+      data.posts.forEach(function(p){ html += postCard(p); });
+      if (data.pages > 1) {
+        html += '<div id="pagination">';
+        for (var i = 1; i <= data.pages; i++) html += '<button class="' + (i===data.page?'active':'') + '" onclick="goPage(' + i + ')">' + i + '</button>';
+        html += '</div>';
+      }
+    }
+    content.innerHTML = html;
+  } catch (err) { content.innerHTML = '<div class="card">Feil: ' + e(err.message) + '</div>'; }
+}
+
+function postCard(p) {
+  var ago = timeAgo(p.created_at);
+  var img = p.images && p.images[0] ? '<img src="/uploads/' + p.images[0] + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0" loading="lazy">' : '';
+  return '<div class="post-card" onclick="showView(\'post\',\'' + p.id + '\')">' +
+    '<div style="display:flex;gap:12px"><div style="flex:1">' +
+    '<div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">' +
+    '<span class="badge ' + (p.type==='offer'?'badge-offer':'badge-request') + '">' + (p.type==='offer'?'🤝 Tilbud':'🙏 Søkes') + '</span>' +
+    (p.category_name ? '<span class="cat-pill">' + (p.category_icon||'') + ' ' + e(p.category_name) + '</span>' : '') +
+    (p.skill_level && p.skill_level !== 'any' ? '<span class="cat-pill" style="background:#E8F0FF;color:var(--sky)">🔵 Godt resultat</span>' : '<span class="cat-pill" style="background:#EBF5EC;color:var(--sage)">🟢 Få det gjort</span>') +
+    (p.has_mentor ? '<span class="cat-pill" style="background:#FEF0E8;color:var(--terra)">🎓 Med mentor</span>' : '') +
+    '</div>' +
+    '<h3 style="font-size:1rem;margin-bottom:6px;font-family:\'Fraunces\',serif">' + e(p.title) + '</h3>' +
+    '<p style="font-size:.88rem;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + e(p.body) + '</p>' +
+    '<div class="post-footer">' + avatarEl(p.author_avatar, p.author_name, 24) + '<span>' + e(p.author_name) + '</span>' +
+    (p.fylke === 'digital' ? '<span>💻 Digital</span>' : p.kommune ? '<span>📍 ' + e(p.kommune) + ', ' + e(p.fylke) + '</span>' : p.fylke ? '<span>📍 ' + e(p.fylke) + '</span>' : p.location ? '<span>📍 ' + e(p.location) + '</span>' : '') +
+    '<span style="margin-left:auto">' + ago + '</span>' + (p.reply_count > 0 ? '<span>💬 ' + p.reply_count + '</span>' : '') + '</div>' +
+    '</div>' + img + '</div></div>';
+}
+
+function setTypeFilter(t) { state.filter.type = t; state.filter.page = 1; renderHome(); }
+function goPage(p) { state.filter.page = p; renderHome(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+// ── Post detail ───────────────────────────────────────────────────────────────
+async function renderPost(id) {
+  var content = document.getElementById('content');
+  try {
+    var p = await api('GET', '/posts/' + id);
+    var isOwner = state.user && state.user.id === p.user_id;
+    var isAssignee = false; // checked via mentorships if needed
+    var imgs = (p.images||[]).map(function(f){ return '<img src="/uploads/' + f + '" style="width:100%;max-height:320px;object-fit:cover;border-radius:8px;margin-bottom:8px" loading="lazy">'; }).join('');
+    var html = '<button class="btn btn-ghost btn-sm" onclick="showView(\'home\')" style="margin-bottom:16px">← Tilbake</button>' +
+      '<div class="card">' + imgs +
+      '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+      '<span class="badge ' + (p.type==='offer'?'badge-offer':'badge-request') + '">' + (p.type==='offer'?'🤝 Tilbyr hjelp':'🙏 Søker hjelp') + '</span>' +
+      (p.category_name ? '<span class="cat-pill">' + (p.category_icon||'') + ' ' + e(p.category_name) + '</span>' : '') +
+      (p.location ? '<span style="font-size:.82rem;color:var(--muted)">📍 ' + e(p.location) + '</span>' : '') +
+      '</div>' +
+      '<h2 style="font-size:1.4rem;margin-bottom:10px;font-family:\'Fraunces\',serif">' + e(p.title) + '</h2>' +
+      '<p style="line-height:1.7;white-space:pre-wrap">' + e(p.body) + '</p>' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">' +
+      avatarEl(p.author_avatar, p.author_name, 40) +
+      '<div><div style="font-weight:600;cursor:pointer" onclick="showView(\'profile\',\'' + p.user_id + '\')">' + e(p.author_name) + '</div><div style="font-size:.8rem;color:var(--muted)">' + timeAgo(p.created_at) + '</div></div>' +
+      '<div style="margin-left:auto;display:flex;gap:8px">' +
+      (!isOwner && state.user && p.status==='open' ? '<button class="btn btn-primary btn-sm" onclick="startConv(\'' + p.user_id + '\',\'' + p.id + '\',\'' + (p.skill_level||'any') + '\')">💬 Kontakt</button>' : '') +
+      (isOwner === false && state.user && p.status==='open' ? '<button class="btn btn-ghost btn-sm" onclick="openMentorInvite(\'' + p.id + '\')" title="Kun for Profesjonelle">🎓 Ta med lærling</button>' : '') +
+      (isOwner && p.status !== 'done' ? '<button class="btn btn-ghost btn-sm" onclick="openModal(\'edit-post\',\'' + p.id + '\')">✏️ Rediger</button><button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="deletePost(\'' + p.id + '\')">🗑️</button>' : '') +
+      '</div></div></div>';
+    content.innerHTML = html;
+  } catch (err) { content.innerHTML = '<div class="card">Feil: ' + e(err.message) + '</div>'; }
+}
+
+async function startConv(userId, postId, skillLevel) {
+  if (!state.user) return openModal('login');
+  // Warn if user tries to contact for high-level post without sufficient skill
+  if (skillLevel && skillLevel !== 'any' && state.user) {
+    try {
+      var mySkill = await api('GET', '/skill/' + state.user.id);
+      if (mySkill.level === 'beginner') {
+        if (!confirm('⚠️ Dette oppdraget er merket som "Godt resultat" (🔵) og passer best for Erfarne eller Profesjonelle.' +
+          '\n\nDu er registrert som Nybegynner (🌱).\n\nDu kan gjerne ta kontakt, men vær åpen om nivået ditt. Fortsette?')) return;
+      }
+    } catch {}
+  }
+  try { var d = await api('POST', '/messages/start', { recipient_id: userId, post_id: postId }); state.activeConvId = d.id; showView('messages'); }
+  catch (err) { toast(err.message, true); }
+}
+
+async function deletePost(id) {
+  if (!confirm('Slette annonsen?')) return;
+  try { await api('DELETE', '/posts/' + id); toast('Slettet.'); showView('home'); }
+  catch (err) { toast(err.message, true); }
+}
+
+async function openMentorInvite(postId) {
+  // Check own skill level first
+  if (!state.user) return;
+  var mySkill = null;
+  try { mySkill = await api('GET', '/skill/' + state.user.id); } catch {}
+
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  title.textContent = '🎓 Ta med lærling';
+
+  if (!mySkill || mySkill.level !== 'professional') {
+    body.innerHTML = '<div style="text-align:center;padding:20px">' +
+      '<div style="font-size:3rem;margin-bottom:12px">🏆</div>' +
+      '<h3 style="margin-bottom:10px">Kun for Profesjonelle</h3>' +
+      '<p style="color:var(--muted);line-height:1.6">For å ta med en lærling på oppdrag må du være på <strong>Profesjonell</strong>-nivå (🏆).</p>' +
+      '<p style="color:var(--muted);margin-top:8px;font-size:.88rem">Du er nå: <strong>' + (mySkill ? mySkill.icon + ' ' + mySkill.label : '🌱 Nybegynner') + '</strong></p>' +
+      '<p style="color:var(--muted);margin-top:8px;font-size:.85rem">Fullfør oppdrag og bygg opp vurderinger for å nå Profesjonell-nivå.</p>' +
+      '</div>';
+    overlay.classList.add('open');
+    return;
+  }
+
+  body.innerHTML = '<p style="font-size:.88rem;color:var(--muted);margin-bottom:14px">Søk opp en bruker du vil ta med som lærling på dette oppdraget. Du er ansvarlig for opplæring og kvalitet.</p>' +
+    '<div class="form-group"><label>Søk bruker</label><input id="mentor-search" placeholder="Navn eller e-post…" oninput="searchMentorUsers(this.value,\'' + postId + '\')"></div>' +
+    '<div id="mentor-search-results"></div>' +
+    '<div id="m-err" class="form-err"></div>';
+  overlay.classList.add('open');
+  window._mentorPostId = postId;
+}
+
+var _mentorSearchTimer = null;
+async function searchMentorUsers(q, postId) {
+  if (_mentorSearchTimer) clearTimeout(_mentorSearchTimer);
+  if (q.length < 2) { document.getElementById('mentor-search-results').innerHTML = ''; return; }
+  _mentorSearchTimer = setTimeout(async function() {
+    try {
+      var users = await api('GET', '/admin/users');
+      var filtered = users.filter(function(u) {
+        return u.id !== state.user.id &&
+          (u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()));
+      }).slice(0, 5);
+      var el = document.getElementById('mentor-search-results');
+      if (!filtered.length) { el.innerHTML = '<p style="color:var(--muted);font-size:.85rem">Ingen brukere funnet.</p>'; return; }
+      el.innerHTML = filtered.map(function(u) {
+        return '<div style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px">' +
+          avatarEl(u.avatar, u.name, 32) +
+          '<div style="flex:1"><div style="font-weight:600;font-size:.88rem">' + e(u.name) + '</div>' +
+          '<div style="font-size:.75rem;color:var(--muted)">' + e(u.email) + '</div></div>' +
+          '<button class="btn btn-sage btn-sm" onclick="inviteAsApprentice(\'' + u.id + '\',\'' + postId + '\')">Inviter</button>' +
+          '</div>';
+      }).join('');
+    } catch(err) { console.warn(err); }
+  }, 400);
+}
+
+async function inviteAsApprentice(apprenticeId, postId) {
+  try {
+    var d = await api('POST', '/mentor/invite', { apprentice_id: apprenticeId, post_id: postId });
+    closeModal();
+    toast('🎓 ' + d.message);
+    renderPost(postId);
+  } catch(err) {
+    var errEl = document.getElementById('m-err');
+    if (errEl) errEl.textContent = err.message;
+    else toast(err.message, true);
+  }
+}
+
+// ── Profile ───────────────────────────────────────────────────────────────────
+async function renderProfile(userId) {
+  if (!userId) { openModal('login'); return; }
+  var content = document.getElementById('content');
+  try {
+    var p = await api('GET', '/profile/' + userId);
+    var isMe = state.user && state.user.id === userId;
+    var stars = function(n) { return '★'.repeat(Math.round(n||0)) + '☆'.repeat(5-Math.round(n||0)); };
+    var html = (!isMe ? '<button class="btn btn-ghost btn-sm" onclick="history.back()" style="margin-bottom:16px">← Tilbake</button>' : '') +
+      '<div class="card"><div style="display:flex;gap:16px;align-items:flex-start">' +
+      avatarEl(p.avatar, p.name, 72) +
+      '<div style="flex:1"><h2 style="font-size:1.3rem">' + e(p.name) +
+      (p.bankid_verified ? ' <span title="BankID-verifisert" style="color:var(--sky)">🔵</span>' : '') +
+      (p.trust_status === 'verified' ? ' <span title="Verifisert">✅</span>' : '') +
+      (p.trust_status === 'pending' || p.trust_status === 'vouched' ? ' <span style="color:#E8C06A">⏳</span>' : '') +
+      '</h2>' +
+      (p.location ? '<div style="color:var(--muted);font-size:.88rem">📍 ' + e(p.location) + '</div>' : '') +
+      (p.reviewCount > 0 ? '<div class="stars">' + stars(p.avgRating) + ' <span style="color:var(--muted);font-size:.8rem">(' + p.reviewCount + ')</span></div>' : '') +
+      '</div>' +
+      (isMe ? '<button class="btn btn-ghost btn-sm" onclick="openModal(\'edit-profile\')">✏️ Rediger</button>' : '') +
+      '</div>' +
+      (p.bio ? '<p style="line-height:1.6;margin-top:12px">' + e(p.bio) + '</p>' : '') +
+      (!isMe && state.user ? '<div style="display:flex;gap:8px;margin-top:12px">' +
+        '<button class="btn btn-primary btn-sm" onclick="startConv(\'' + userId + '\')">💬 Send melding</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="openReportUser(\'' + userId + '\',\'' + e(p.name) + '\')">🚩 Rapporter</button>' +
+        '</div>' : '') +
+      (!isMe && state.user && ['active','verified'].includes(state.user.trust_status) && (p.trust_status === 'pending') ? '<div style="margin-top:8px"><button class="btn btn-sage btn-sm" onclick="openVouchUser(\'' + userId + '\',\'' + e(p.name) + '\')">🤝 Gå god for</button></div>' : '') +
+      '</div>';
+
+    if (p.posts && p.posts.length) {
+      html += '<div class="card" style="margin-top:14px"><h3 style="font-size:.95rem;margin-bottom:12px">Aktive annonser</h3>' + p.posts.map(postCard).join('') + '</div>';
+    }
+    if (p.reviews && p.reviews.length) {
+      html += '<div class="card" style="margin-top:14px"><h3 style="font-size:.95rem;margin-bottom:12px">Vurderinger</h3>' +
+        p.reviews.map(function(r){ return '<div style="padding:10px 0;border-bottom:1px solid var(--border)">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' + avatarEl(r.reviewer_avatar, r.reviewer_name, 28) +
+          '<span style="font-weight:600;font-size:.88rem">' + e(r.reviewer_name) + '</span><span class="stars" style="font-size:.85rem">' + stars(r.rating) + '</span>' +
+          '<span style="color:var(--muted);font-size:.78rem;margin-left:auto">' + timeAgo(r.created_at) + '</span></div>' +
+          (r.comment ? '<p style="font-size:.88rem">' + e(r.comment) + '</p>' : '') + '</div>';}).join('') + '</div>';
+    }
+    content.innerHTML = html;
+  } catch (err) { content.innerHTML = '<div class="card">Feil: ' + e(err.message) + '</div>'; }
+}
+
+// ── Messages ──────────────────────────────────────────────────────────────────
+async function renderMessages() {
+  if (!state.user) return openModal('login');
+  var content = document.getElementById('content');
+  try {
+    var convs = await api('GET', '/messages');
+    var convList = convs.map(function(c) {
+      var other = c.participants && c.participants[0];
+      return '<div class="conv-item ' + (c.id===state.activeConvId?'active':'') + '" id="ci-' + c.id + '" onclick="openConv(\'' + c.id + '\')">' +
+        avatarEl(other&&other.avatar, other&&other.name||'?', 36) +
+        '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.9rem">' + e((other&&other.name)||'Ukjent') + '</div>' +
+        '<div style="font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + e(c.last_message||'…') + '</div></div>' +
+        (c.unread_count > 0 ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--terra);flex-shrink:0;display:block"></span>' : '') + '</div>';
+    }).join('');
+    content.innerHTML = '<div class="card" style="min-height:480px">' +
+      '<div style="display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:420px">' +
+      '<div>' + (convs.length ? convList : '<p style="color:var(--muted);font-size:.88rem">Ingen samtaler ennå.</p>') + '</div>' +
+      '<div id="chat-area" style="display:flex;flex-direction:column;justify-content:center;align-items:center;color:var(--muted)"><div style="font-size:2rem">💬</div><p style="margin-top:8px;font-size:.9rem">Velg en samtale</p></div>' +
+      '</div></div>';
+    if (state.activeConvId) openConv(state.activeConvId);
+  } catch (err) { content.innerHTML = '<div class="card">Feil: ' + e(err.message) + '</div>'; }
+}
+
+async function openConv(id) {
+  state.activeConvId = id;
+  document.querySelectorAll('.conv-item').forEach(function(el){ el.classList.remove('active'); });
+  var ci = document.getElementById('ci-' + id);
+  if (ci) ci.classList.add('active');
+  try {
+    var data = await api('GET', '/messages/' + id);
+    var other = data.conversation.participants && data.conversation.participants.find(function(p){ return p.id !== (state.user&&state.user.id); });
+    var area = document.getElementById('chat-area');
+    area.innerHTML = '<div style="font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px">' + avatarEl(other&&other.avatar, other&&other.name, 30) + '<span>' + e((other&&other.name)||'Ukjent') + '</span></div>' +
+      '<div id="chat-messages">' + data.messages.map(function(m){ return '<div><div class="msg-bubble ' + (m.sender_id===(state.user&&state.user.id)?'mine':'theirs') + '">' + e(m.body) + '<div style="font-size:.72rem;opacity:.7;margin-top:3px">' + timeAgo(m.created_at) + '</div></div></div>'; }).join('') + '</div>' +
+      '<div style="display:flex;gap:8px"><input id="msg-input" placeholder="Skriv en melding…" style="flex:1;padding:9px 13px;border-radius:8px;border:1.5px solid var(--border);font-family:\'DM Sans\',sans-serif" onkeydown="if(event.key===\'Enter\')sendMsg(\'' + id + '\')"><button class="btn btn-primary btn-sm" onclick="sendMsg(\'' + id + '\')">Send</button></div>';
+    var msgs = document.getElementById('chat-messages');
+    if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    if (state.convInterval) clearInterval(state.convInterval);
+    state.convInterval = setInterval(function(){ refreshConv(id); }, 4000);
+  } catch (err) { toast(err.message, true); }
+}
+
+async function refreshConv(id) {
+  if (state.view !== 'messages' || state.activeConvId !== id) return;
+  try {
+    var data = await api('GET', '/messages/' + id);
+    var msgs = document.getElementById('chat-messages');
+    if (!msgs) return;
+    var atBottom = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60;
+    msgs.innerHTML = data.messages.map(function(m){ return '<div><div class="msg-bubble ' + (m.sender_id===(state.user&&state.user.id)?'mine':'theirs') + '">' + e(m.body) + '<div style="font-size:.72rem;opacity:.7;margin-top:3px">' + timeAgo(m.created_at) + '</div></div></div>'; }).join('');
+    if (atBottom) msgs.scrollTop = msgs.scrollHeight;
+  } catch {}
+}
+
+async function sendMsg(convId) {
+  var input = document.getElementById('msg-input');
+  var body = input && input.value.trim();
+  if (!body) return;
+  input.value = '';
+  try { await api('POST', '/messages/' + convId + '/messages', { body: body }); await refreshConv(convId); var msgs = document.getElementById('chat-messages'); if (msgs) msgs.scrollTop = msgs.scrollHeight; }
+  catch (err) { toast(err.message, true); }
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openModal(type, arg) {
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  overlay.classList.add('open');
+
+  if (type === 'login') {
+    title.textContent = 'Logg inn';
+    body.innerHTML = '<div class="form-group"><label>E-post</label><input id="m-email" type="email" placeholder="navn@eksempel.no"></div>' +
+      '<div class="form-group"><label>Passord</label><input id="m-pass" type="password" placeholder="Passord"></div>' +
+      '<div id="m-err" class="form-err"></div>' +
+      '<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doLogin()">Logg inn</button>' +
+      '<p style="text-align:center;margin-top:12px;font-size:.85rem;color:var(--muted)">Ikke registrert? <a href="#" onclick="openModal(\'register\')">Opprett konto</a></p>';
+  } else if (type === 'register') {
+    title.textContent = 'Opprett konto';
+    body.innerHTML = '<div class="form-group"><label>Fullt navn</label><input id="m-name" placeholder="Ola Nordmann"></div>' +
+      '<div class="form-group"><label>E-post</label><input id="m-email" type="email" placeholder="navn@eksempel.no"></div>' +
+      '<div class="form-group"><label>Passord</label><input id="m-pass" type="password" placeholder="Minst 8 tegn"></div>' +
+      '<div id="m-err" class="form-err"></div>' +
+      '<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doRegister()">Registrer</button>' +
+      '<p style="text-align:center;margin-top:12px;font-size:.85rem;color:var(--muted)">Har du konto? <a href="#" onclick="openModal(\'login\')">Logg inn</a></p>';
+  } else if (type === 'new-post') {
+    if (!state.user) return openModal('login');
+    if (state.user.trust_status === 'pending' || state.user.trust_status === 'vouched') {
+      title.textContent = '⏳ Konto ikke aktivert ennå';
+      body.innerHTML = '<div style="text-align:center;padding:20px">' +
+        '<div style="font-size:2.5rem;margin-bottom:12px">⏳</div>' +
+        '<p style="margin-bottom:12px">Kontoen din venter på admin-godkjenning.</p>' +
+        '<p style="color:var(--muted);font-size:.88rem;line-height:1.6">Du kan fortsatt <strong>søke om hjelp</strong>, men du må bli aktivert for å tilby tjenester.</p>' +
+        '<p style="color:var(--muted);font-size:.85rem;margin-top:10px">Be en eksisterende bruker om å gå god for deg for å fremskynde prosessen.</p>' +
+        '</div>';
+      document.getElementById('modal-overlay').classList.add('open');
+      return;
+    }
+    title.textContent = 'Ny annonse';
+    var catOpts = state.categories.map(function(c){ return '<option value="' + c.id + '">' + c.icon + ' ' + e(c.name) + '</option>'; }).join('');
+    body.innerHTML = '<div class="form-group"><label>Type</label><div class="radio-group">' +
+      '<label id="lbl-offer" class="active" onclick="setPostType(\'offer\')">🤝 Jeg tilbyr hjelp</label>' +
+      '<label id="lbl-request" onclick="setPostType(\'request\')">🙏 Jeg trenger hjelp</label>' +
+      '</div></div>' +
+      '<div class="form-group"><label>Kategori</label><select id="m-cat"><option value="">Velg…</option>' + catOpts + '</select></div>' +
+      '<div class="form-group"><label>Tittel</label><input id="m-title" placeholder="Kort og beskrivende tittel"></div>' +
+      '<div class="form-group"><label>Beskrivelse</label><textarea id="m-body" placeholder="Beskriv hva du tilbyr eller trenger…"></textarea></div>' +
+      '<div class="form-group"><label>Område</label>' +
+    '<select id="m-fylke" onchange="updateKommuneSel()" style="margin-bottom:8px"><option value="">Velg fylke…</option>' +
+    Object.entries(NORWAY).map(function(e2){ return '<option value="' + e2[0] + '">' + e2[1].name + '</option>'; }).join('') +
+    '</select>' +
+    '<select id="m-kommune" style="display:none;margin-bottom:8px"><option value="">Velg kommune (valgfritt)…</option></select>' +
+    '<input id="m-loc" placeholder="Sted/adresse (valgfritt)" style="font-size:.85rem"></div>' +
+      '<div class="form-group"><label>Nivå på oppdraget</label>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">' +
+      '<label id="lbl-skill-any" style="border:1.5px solid var(--terra);border-radius:8px;padding:10px;cursor:pointer;background:#FEF0E8;text-align:center" onclick="setSkillLevel(\'any\')">' +
+      '<div style="font-size:1.3rem">🟢</div><div style="font-weight:600;font-size:.88rem">Få det gjort</div>' +
+      '<div style="font-size:.75rem;color:var(--muted)">Alle kan prøve · lav terskel</div></label>' +
+      '<label id="lbl-skill-exp" style="border:1.5px solid var(--border);border-radius:8px;padding:10px;cursor:pointer;text-align:center" onclick="setSkillLevel(\'experienced\')">' +
+      '<div style="font-size:1.3rem">🔵</div><div style="font-weight:600;font-size:.88rem">Godt resultat</div>' +
+      '<div style="font-size:.75rem;color:var(--muted)">Erfaren+ · med veiledning ok</div></label>' +
+      '</div></div>' +
+      '<div class="form-group"><label>Bilder (maks 4)</label><input type="file" id="m-imgs" accept="image/*" multiple></div>' +
+      '<div id="m-err" class="form-err"></div>' +
+      '<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doNewPost()">Publiser annonse</button>';
+    window._postType = 'offer';
+  window._postSkillLevel = 'any';
+  } else if (type === 'edit-profile') {
+    var u = state.user;
+    title.textContent = 'Rediger profil';
+    body.innerHTML = '<div class="form-group"><label>Navn</label><input id="m-name" value="' + e(u.name) + '"></div>' +
+      '<div class="form-group"><label>Biografi</label><textarea id="m-bio">' + e(u.bio||'') + '</textarea></div>' +
+      '<div class="form-group"><label>Sted</label><input id="m-loc" value="' + e(u.location||'') + '"></div>' +
+      '<div class="form-group"><label>Profilbilde</label><input type="file" id="m-avatar" accept="image/*"></div>' +
+      '<div id="m-err" class="form-err"></div>' +
+      '<button class="btn btn-primary" style="width:100%;margin-top:4px" onclick="doEditProfile()">Lagre</button>';
+  } else if (type === 'reset-password') {
+    title.textContent = 'Nytt passord';
+    body.innerHTML = '<div class="form-group"><label>Nytt passord</label><input id="m-pass" type="password" placeholder="Minst 8 tegn"></div>' +
+      '<div id="m-err" class="form-err"></div>' +
+      '<button class="btn btn-primary" style="width:100%" onclick="doReset(\'' + arg + '\')">Sett nytt passord</button>';
+  }
+}
+
+function setSkillLevel(level) {
+  window._postSkillLevel = level;
+  var any = document.getElementById('lbl-skill-any');
+  var exp = document.getElementById('lbl-skill-exp');
+  if (any) { any.style.border = level === 'any' ? '1.5px solid var(--terra)' : '1.5px solid var(--border)'; any.style.background = level === 'any' ? '#FEF0E8' : ''; }
+  if (exp) { exp.style.border = level === 'experienced' ? '1.5px solid var(--sky)' : '1.5px solid var(--border)'; exp.style.background = level === 'experienced' ? '#E8F0FF' : ''; }
+}
+
+function updateKommuneSel() {
+  var slug = document.getElementById('m-fylke') && document.getElementById('m-fylke').value;
+  var sel  = document.getElementById('m-kommune');
+  if (!sel) return;
+  if (!slug || slug === 'digital' || !NORWAY[slug] || !NORWAY[slug].kommuner.length) {
+    sel.style.display = 'none'; sel.value = ''; return;
+  }
+  sel.style.display = '';
+  sel.innerHTML = '<option value="">Velg kommune (valgfritt)…</option>' +
+    NORWAY[slug].kommuner.map(function(k){ return '<option value="' + k + '">' + k + '</option>'; }).join('');
+}
+
+function setPostType(t) {
+  window._postType = t;
+  document.getElementById('lbl-offer').classList.toggle('active', t==='offer');
+  document.getElementById('lbl-request').classList.toggle('active', t==='request');
+}
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOverlay(ev) { if (ev.target === document.getElementById('modal-overlay')) closeModal(); }
+
+// ── Auth actions ──────────────────────────────────────────────────────────────
+async function doLogin() {
+  try {
+    var d = await api('POST', '/auth/login', { email: document.getElementById('m-email').value, password: document.getElementById('m-pass').value });
+    setUser(d.user); closeModal(); toast('Velkommen, ' + d.user.name.split(' ')[0] + '!'); showView('home');
+  } catch (err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+async function doRegister() {
+  try {
+    await api('POST', '/auth/register', { name: document.getElementById('m-name').value, email: document.getElementById('m-email').value, password: document.getElementById('m-pass').value });
+    closeModal(); toast('Registrert! Du kan nå logge inn.');
+  } catch (err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+async function doReset(token) {
+  try {
+    await api('POST', '/auth/reset', { token: token, password: document.getElementById('m-pass').value });
+    closeModal(); toast('Passord oppdatert!'); history.replaceState({}, '', '/');
+  } catch (err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+async function doNewPost() {
+  var type  = window._postType || 'offer';
+  var title = document.getElementById('m-title').value;
+  var body  = document.getElementById('m-body').value;
+  var cat   = document.getElementById('m-cat').value;
+  var loc   = document.getElementById('m-loc').value;
+  var files = document.getElementById('m-imgs').files;
+  if (!title) return document.getElementById('m-err').textContent = 'Tittel er påkrevd';
+  if (!body)  return document.getElementById('m-err').textContent = 'Beskrivelse er påkrevd';
+  var fylke  = document.getElementById('m-fylke') && document.getElementById('m-fylke').value;
+  var kommune = document.getElementById('m-kommune') && document.getElementById('m-kommune').value;
+  var skillLevel = window._postSkillLevel || 'any';
+  var fd = new FormData();
+  fd.append('type', type); fd.append('title', title); fd.append('body', body);
+  fd.append('skill_level', skillLevel);
+  if (cat)     fd.append('category_id', cat);
+  if (loc)     fd.append('location', loc);
+  if (fylke)   fd.append('fylke', fylke);
+  if (kommune) fd.append('kommune', kommune);
+  for (var i = 0; i < files.length; i++) fd.append('images', files[i]);
+  try {
+    await api('POST', '/posts', fd, true);
+    closeModal(); toast('Annonse publisert!'); state.filter = {type:'',category:'',q:'',page:1}; showView('home'); loadCategories();
+  } catch (err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+async function doEditProfile() {
+  var avatarFile = document.getElementById('m-avatar').files[0];
+  try {
+    await api('PUT', '/profile/me', { name: document.getElementById('m-name').value, bio: document.getElementById('m-bio').value, location: document.getElementById('m-loc').value });
+    if (avatarFile) { var fd = new FormData(); fd.append('avatar', avatarFile); await api('POST', '/profile/me/avatar', fd, true); }
+    await checkSession(); closeModal(); toast('Profil oppdatert!'); showView('profile-me');
+  } catch (err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+var _adminState = { users: [], editCatId: null };
+
+async function renderAdmin() {
+  if (!state.user || state.user.role !== 'admin') return showView('home');
+  var content = document.getElementById('content');
+  try {
+    var results = await Promise.all([api('GET', '/admin/stats'), api('GET', '/admin/users'), api('GET', '/posts?limit=50')]);
+    var stats = results[0], users = results[1], postsData = results[2];
+    var labStatus = await api('GET', '/lab/status').catch(function(){ return null; });
+    var isLab = !!(labStatus && labStatus.isLab);
+    _adminState.users = users;
+
+    var statsHtml = [['👤','Brukere',stats.users],['📋','Annonser',stats.posts],['💬','Meldinger',stats.messages],['⭐','Vurderinger',stats.reviews]]
+      .map(function(x){ return '<div class="admin-card admin-stat"><div class="val">' + x[2] + '</div><div class="lbl">' + x[0] + ' ' + x[1] + '</div></div>'; }).join('');
+
+    var tabsHtml = '<div class="tabs" id="admin-tabs">' +
+      '<button class="tab active" onclick="adminTab(\'users\')">👤 Brukere (' + users.length + ')</button>' +
+      '<button class="tab" onclick="adminTab(\'posts\')">📋 Annonser (' + postsData.posts.length + ')</button>' +
+      '<button class="tab" onclick="adminTab(\'categories\');loadAdminCats()">🏷️ Kategorier</button>' +
+      '<button class="tab" onclick="adminTab(\'flagged\');loadAdminFlagged()">' + (stats.flagged > 0 ? '⚠️ Flagget (' + stats.flagged + ')' : '⚠️ Flagget') + '</button>' +
+      '<button class="tab" onclick="adminTab(\'reports\');loadAdminReports()">🚩 Rapporter</button>' +
+      '<button class="tab" onclick="adminTab(\'changelog\')">📋 Endringslogg</button>' +
+      '<button class="tab" onclick="adminTab(\'pending-users\');loadPendingUsers()">⏳ Nye brukere</button>' +
+      (!isLab ? '<button class="tab" onclick="adminTab(\'access\');loadAdminAccess()">🔐 Tilgang</button>' : '') +
+      (isLab ? '<button class="tab" onclick="adminTab(\'lab\')">🧪 Lab</button>' : '') +
+      (!isLab ? '<button class="tab" onclick="adminTab(\'lab-control\');loadLabControl()">🛰️ Lab-kontroll</button>' : '') +
+      '<button class="tab" onclick="adminTab(\'changelog\')">📋 Endringslogg</button>' +
+      '</div>';
+    var usersHtml = '<div id="admin-tab-users">' +
+      '<div style="margin-bottom:12px"><input placeholder="🔍 Søk brukere…" oninput="adminFilterUsers(this.value)" style="max-width:280px;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-family:\'DM Sans\',sans-serif"></div>' +
+      '<div class="card" style="padding:0;overflow:hidden"><table>' +
+      '<thead><tr><th>Navn</th><th>E-post</th><th>Rolle</th><th>Verifisert</th><th>Registrert</th><th></th></tr></thead>' +
+      '<tbody id="admin-users-tbody">' + adminUserRows(users) + '</tbody></table></div></div>';
+
+    var postsHtml = '<div id="admin-tab-posts" style="display:none">' +
+      '<div class="card" style="padding:0;overflow:hidden"><table>' +
+      '<thead><tr><th>Tittel</th><th>Type</th><th>Bruker</th><th>Status</th><th>Dato</th><th></th></tr></thead><tbody>' +
+      postsData.posts.map(function(p){
+        return '<tr><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">' + e(p.title) + '</td>' +
+          '<td><span class="badge ' + (p.type==='offer'?'badge-offer':'badge-request') + '">' + (p.type==='offer'?'Tilbud':'Søkes') + '</span></td>' +
+          '<td style="color:var(--muted)">' + e(p.author_name||'') + '</td>' +
+          '<td style="color:' + (p.status==='open'?'var(--sage)':'var(--muted)') + '">' + p.status + '</td>' +
+          '<td style="color:var(--muted)">' + timeAgo(p.created_at) + '</td>' +
+          '<td><button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="adminDeletePost(\'' + p.id + '\')">🗑️</button></td></tr>';
+      }).join('') + '</tbody></table></div></div>';
+
+    var catsHtml = '<div id="admin-tab-categories" style="display:none">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+      '<h3 style="font-size:.95rem">Kategorier</h3>' +
+      '<button class="btn btn-sage btn-sm" onclick="openAdminCatForm()">+ Ny</button></div>' +
+      '<div id="admin-cat-form" style="display:none;background:var(--warm);border-radius:8px;padding:14px;margin-bottom:12px">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 60px auto;gap:8px;align-items:end">' +
+      '<div><label style="font-size:.75rem;color:var(--muted)">Navn</label><input id="acf-name" placeholder="Elektriker" style="margin-top:4px"></div>' +
+      '<div><label style="font-size:.75rem;color:var(--muted)">Slug</label><input id="acf-slug" placeholder="elektriker" style="margin-top:4px"></div>' +
+      '<div><label style="font-size:.75rem;color:var(--muted)">Ikon</label><input id="acf-icon" placeholder="⚡" style="margin-top:4px;text-align:center;font-size:1.2rem"></div>' +
+      '<div><label style="font-size:.75rem;color:var(--muted)">Farge</label><input id="acf-color" type="color" value="#AAAAAA" style="margin-top:4px;height:36px;padding:2px 4px"></div>' +
+      '</div><div style="display:flex;gap:8px;margin-top:10px">' +
+      '<button class="btn btn-sage btn-sm" onclick="saveAdminCat()">Lagre</button>' +
+      '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'admin-cat-form\').style.display=\'none\'">Avbryt</button>' +
+      '</div><div id="acf-err" style="color:#C0392B;font-size:.8rem;margin-top:6px"></div></div>' +
+      '<div id="admin-cat-list"><div class="spinner"></div></div></div>';
+
+    var flaggedHtml = '<div id="admin-tab-flagged" style="display:none"><div id="admin-flagged-list"><div class="spinner"></div></div></div>';
+
+    var reportsHtml = '<div id="admin-tab-reports" style="display:none"><div id="admin-reports-list"><div class="spinner"></div></div></div>';
+    var changelogHtml = '<div id="admin-tab-changelog" style="display:none">' +
+      '<div class="card" style="max-height:70vh;overflow-y:auto">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">' +
+      '<h2 style="font-size:1.1rem">📋 Endringslogg</h2>' +
+      '<span style="font-size:.78rem;color:var(--muted)">Kun synlig for admins</span>' +
+      '</div>' +
+
+      '<h2 style="font-size:1.1rem;margin:0 0 8px;color:var(--brown);border-bottom:2px solid var(--border);padding-bottom:6px">Versjon 0.2.0 — 30. mars 2026</h2>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Tillits- og sikkerhetssystem</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Nytt brukerstatus-system: pending → vouched → active → verified → suspended → banned</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Nye brukere kan kun søke hjelp til kontoen er godkjent av admin</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Brukere kan gå god for nye (vouch-system) for å fremskynde godkjenning</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">BankID-verifisering støttes (admin kan markere brukere manuelt)</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Automatisk suspensjon etter 3 rapporter</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Admin kan godkjenne, suspendere, bannlyse og gjenopprette brukere</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Rapporteringssystem</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">🚩 Rapporter-knapp på alle brukerprofiler</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Anonyme rapporter sendes til admin-panel</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Admin ser nettverkskart: invitør, søsken i nettverk, og hvem brukeren selv har invitert</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Kompetansenivåer</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">🌱 Nybegynner → ⭐ Erfaren → 🏆 Profesjonell</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Nybegynner → Erfaren: 2-3 fullførte + snitt 4★</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Erfaren → Profesjonell: 10 fullførte på høyt nivå + snitt 4.5★</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Admin kan overstyre nivå manuelt</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Oppdragsnivåer</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">🟢 <strong>Få det gjort</strong> — alle kan prøve, lav terskel</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">🔵 <strong>Godt resultat</strong> — passer best for erfarne, nybegynnere varsles</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Mentor-system</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Kun 🏆 Profesjonelle kan ta med lærling på oppdrag</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Sikrer at opplæring skjer på riktig nivå</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Admin-on-demand (prod)</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Admins kjører som vanlige brukere i prod</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Be om midlertidig admin-tilgang (4 timer) — en annen admin må godkjenne</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Alle admin-handlinger logges med hvem som gjorde hva</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">GitHub-integrasjon og versjonssystem</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Auto-generert versjonsnummer (dato + filhash)</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Opptil 5 versjoner lagres — rollback med ett klikk</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Prod-admin kan gjenopprette lab til tidligere versjon via Portainer</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Fylke/kommune-filter</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Filterkolonne med alle norske fylker og kommuner</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Kaskaderende valg: Fylke → Kommune → fritekst</li>' +
+      '</ul>' +
+
+      '<hr style="margin:20px 0;border:none;border-top:1px solid var(--border)">' +
+
+      '<h2 style="font-size:1.1rem;margin:0 0 8px;color:var(--brown);border-bottom:2px solid var(--border);padding-bottom:6px">Versjon 0.1.0 — 29. mars 2026</h2>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Kjernefunksjoner</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Annonser med tilbud og søkes, bilder og kategorier</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Brukerprofiler med avatar, bio, sted og vurderinger</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Meldingssystem med sanntids-polling</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Søk og filtrering på type og kategori</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Sensurfilter</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Automatisk flagging av stygge ord, kontaktinfo og svindelmønstre</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">E-postvarsling til alle admins ved flagging</li>' +
+      '</ul>' +
+
+      '<h3 style="font-size:.95rem;margin:14px 0 6px;color:var(--terra)">Lab-system</h3>' +
+      '<ul style="padding-left:20px;margin:4px 0">' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Separate lab- og prod-instanser med samme kodebase</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Lab-admin kan laste opp filer via drag-and-drop</li>' +
+      '<li style="font-size:.88rem;margin-bottom:3px">Filstatus-panel med versjon, hash og dato per fil</li>' +
+      '</ul>' +
+
+      '</div></div>';
+    var pendingUsersHtml = '<div id="admin-tab-pending-users" style="display:none"><div id="admin-pending-list"><div class="spinner"></div></div></div>';
+
+    var accessHtml = '<div id="admin-tab-access" style="display:none">' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' +
+      '<div><h3 style="font-size:.95rem;margin-bottom:10px">🔐 Ventende forespørsler</h3><div id="admin-access-requests"><div class="spinner"></div></div></div>' +
+      '<div><h3 style="font-size:.95rem;margin-bottom:10px">📋 Handlingslogg</h3><div id="admin-access-log"><div class="spinner"></div></div></div>' +
+      '</div></div>';
+
+    var labHtml = isLab ? '<div id="admin-tab-lab" style="display:none">' + buildLabHtml(labStatus) + '</div>' : '';
+
+    var labControlHtml = !isLab ? '<div id="admin-tab-lab-control" style="display:none"><div id="lab-control-content"><div class="spinner"></div></div></div>' : '';
+
+    content.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><h2 style="font-size:1.3rem">⚙️ Admin</h2></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">' + statsHtml + '</div>' +
+      tabsHtml + usersHtml + postsHtml + catsHtml + flaggedHtml + reportsHtml + pendingUsersHtml + changelogHtml + accessHtml + labHtml + labControlHtml;
+
+  } catch (err) { content.innerHTML = '<div class="card">Feil: ' + e(err.message) + '</div>'; }
+}
+
+function adminUserRows(users) {
+  return users.map(function(u) {
+    var roleBg = u.role==='admin' ? 'background:#FEF0E8;color:var(--terra)' : 'background:var(--warm);color:var(--muted)';
+    return '<tr><td style="font-weight:600">' + e(u.name) + '</td>' +
+      '<td style="color:var(--muted);font-size:.82rem">' + e(u.email) + '</td>' +
+      '<td><span style="padding:2px 10px;border-radius:10px;font-size:.75rem;font-weight:700;' + roleBg + '">' + u.role + '</span></td>' +
+      '<td>' + (u.verified?'✅':'<span style="color:var(--muted)">–</span>') + '</td>' +
+      '<td style="color:var(--muted);font-size:.8rem">' + new Date(u.created_at*1000).toLocaleDateString('no') + '</td>' +
+      '<td style="display:flex;gap:6px">' +
+      '<button class="btn btn-ghost btn-sm" onclick="adminToggleRole(\'' + u.id + '\',\'' + u.role + '\')">' + (u.role==='admin'?'↓ Degrader':'↑ Admin') + '</button>' +
+      '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="adminDeleteUser(\'' + u.id + '\',\'' + e(u.name) + '\')">🗑️</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+function adminTab(tab) {
+  ['users','posts','categories','flagged','access','lab','lab-control','reports','pending-users','changelog'].forEach(function(t) {
+    var el = document.getElementById('admin-tab-' + t);
+    if (el) el.style.display = t===tab ? '' : 'none';
+  });
+  document.querySelectorAll('#admin-tabs .tab').forEach(function(btn) {
+    var oc = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', oc.indexOf("adminTab('" + tab + "')") === 0);
+  });
+}
+
+function adminFilterUsers(q) {
+  var filtered = _adminState.users.filter(function(u){ return u.name.toLowerCase().includes(q.toLowerCase()) || u.email.toLowerCase().includes(q.toLowerCase()); });
+  var tbody = document.getElementById('admin-users-tbody');
+  if (tbody) tbody.innerHTML = adminUserRows(filtered);
+}
+
+async function adminToggleRole(id, cur) {
+  var nr = cur==='admin' ? 'user' : 'admin';
+  if (!confirm('Endre rolle til ' + nr + '?')) return;
+  try { await api('PUT', '/admin/users/' + id + '/role', { role: nr }); toast('Rolle oppdatert!'); renderAdmin(); }
+  catch (err) { toast(err.message, true); }
+}
+
+async function adminDeleteUser(id, name) {
+  if (!confirm('Slette "' + name + '"?')) return;
+  try { await api('DELETE', '/admin/users/' + id); toast('Slettet!'); renderAdmin(); }
+  catch (err) { toast(err.message, true); }
+}
+
+async function adminDeletePost(id) {
+  if (!confirm('Slette annonsen?')) return;
+  try { await api('DELETE', '/admin/posts/' + id); toast('Slettet!'); renderAdmin(); }
+  catch (err) { toast(err.message, true); }
+}
+
+// Categories admin
+function openAdminCatForm(id, name, slug, icon, color) {
+  _adminState.editCatId = id || null;
+  document.getElementById('acf-name').value  = name  || '';
+  document.getElementById('acf-slug').value  = slug  || '';
+  document.getElementById('acf-icon').value  = icon  || '';
+  document.getElementById('acf-color').value = color || '#AAAAAA';
+  document.getElementById('acf-slug').disabled = !!id;
+  document.getElementById('admin-cat-form').style.display = '';
+  document.getElementById('acf-err').textContent = '';
+}
+
+async function loadAdminCats() {
+  var el = document.getElementById('admin-cat-list');
+  if (!el) return;
+  try {
+    var cats = await api('GET', '/admin/categories');
+    el.innerHTML = '<div class="card" style="padding:0;overflow:hidden"><table>' +
+      '<thead><tr><th>Ikon</th><th>Navn</th><th>Slug</th><th>Farge</th><th>Annonser</th><th></th></tr></thead><tbody>' +
+      cats.map(function(c) {
+        return '<tr><td style="font-size:1.3rem">' + c.icon + '</td>' +
+          '<td style="font-weight:600">' + e(c.name) + '</td>' +
+          '<td style="font-family:monospace;color:var(--muted);font-size:.8rem">' + e(c.slug) + '</td>' +
+          '<td><div style="width:20px;height:20px;border-radius:50%;background:' + e(c.color) + ';display:inline-block"></div></td>' +
+          '<td style="color:var(--muted)">' + (c.count||0) + '</td>' +
+          '<td style="display:flex;gap:6px">' +
+          '<button class="btn btn-ghost btn-sm" onclick="openAdminCatForm(' + c.id + ',\'' + e(c.name) + '\',\'' + e(c.slug) + '\',\'' + e(c.icon) + '\',\'' + e(c.color) + '\')">✏️</button>' +
+          '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="deleteAdminCat(' + c.id + ',\'' + e(c.name) + '\')">🗑️</button>' +
+          '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  } catch(err) { el.innerHTML = '<p style="color:#C0392B">' + e(err.message) + '</p>'; }
+}
+
+async function saveAdminCat() {
+  var name=document.getElementById('acf-name').value.trim(), slug=document.getElementById('acf-slug').value.trim(),
+      icon=document.getElementById('acf-icon').value.trim(), color=document.getElementById('acf-color').value;
+  var errEl = document.getElementById('acf-err');
+  if (!name||!icon) { errEl.textContent='Navn og ikon er påkrevd'; return; }
+  try {
+    if (_adminState.editCatId) await api('PUT', '/admin/categories/'+_adminState.editCatId, {name,icon,color});
+    else { if(!slug){errEl.textContent='Slug påkrevd';return;} await api('POST','/admin/categories',{name,slug,icon,color}); }
+    document.getElementById('admin-cat-form').style.display='none';
+    _adminState.editCatId=null;
+    toast('Lagret!'); loadAdminCats(); loadCategories();
+  } catch(err) { errEl.textContent=err.message; }
+}
+
+async function deleteAdminCat(id, name) {
+  if (!confirm('Slette "'+name+'"?')) return;
+  try { await api('DELETE','/admin/categories/'+id); toast('Slettet!'); loadAdminCats(); loadCategories(); }
+  catch(err) { toast(err.message,true); }
+}
+
+// Flagged admin
+async function loadAdminReports() {
+  var el = document.getElementById('admin-reports-list');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    var reports = await api('GET', '/admin/reports');
+    if (!reports.length) { el.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--muted)">✅ Ingen aktive rapporter</div>'; return; }
+    el.innerHTML = reports.map(function(r) {
+      var statusColor = r.trust_status === 'suspended' ? 'var(--terra)' : r.trust_status === 'banned' ? '#C0392B' : 'var(--muted)';
+
+      // Build network section
+      function userPill(u) {
+        var rc = u.report_count > 0 ? ' <span style="color:#C0392B;font-size:.7rem">(' + u.report_count + ' 🚩)</span>' : '';
+        var st = u.trust_status === 'suspended' ? ' ⏸' : u.trust_status === 'banned' ? ' 🚫' : '';
+        return '<span style="display:inline-flex;align-items:center;gap:4px;background:var(--warm);border:1px solid var(--border);border-radius:14px;padding:2px 8px;font-size:.78rem;margin:2px">' +
+          e(u.name) + st + rc + '</span>';
+      }
+
+      var networkHtml = '<div style="margin:10px 0;padding:10px;background:var(--cream);border-radius:8px;font-size:.82rem">' +
+        '<div style="font-weight:600;margin-bottom:6px;color:var(--muted)">🕸️ Nettverk</div>';
+
+      if (r.vouchedByUser) {
+        networkHtml += '<div style="margin-bottom:6px"><span style="color:var(--muted)">Invitert av:</span> ' + userPill(r.vouchedByUser) + '</div>';
+        if (r.inviterNetwork && r.inviterNetwork.length) {
+          networkHtml += '<div style="margin-bottom:6px"><span style="color:var(--muted)">Andre invitert av samme person:</span><br>' +
+            r.inviterNetwork.map(userPill).join('') + '</div>';
+        }
+      } else {
+        networkHtml += '<div style="color:var(--muted);margin-bottom:6px">Ingen kjent invitør</div>';
+      }
+
+      if (r.invitedByReported && r.invitedByReported.length) {
+        networkHtml += '<div><span style="color:var(--muted)">Denne brukeren har invitert:</span><br>' +
+          r.invitedByReported.map(userPill).join('') + '</div>';
+      }
+      networkHtml += '</div>';
+
+      return '<div class="card" style="margin-bottom:12px">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">' +
+        '<span style="font-weight:700;font-size:1rem">🚩 ' + e(r.reported_name) + '</span>' +
+        '<span style="font-size:.78rem;background:var(--warm);padding:2px 8px;border-radius:8px;color:' + statusColor + '">' + e(r.trust_status) + '</span>' +
+        (r.report_count > 1 ? '<span style="font-size:.75rem;background:#FEE;color:#C0392B;padding:2px 7px;border-radius:8px">' + r.report_count + ' rapporter totalt</span>' : '') +
+        '<span style="font-size:.75rem;color:var(--muted);margin-left:auto">' + timeAgo(r.created_at) + '</span>' +
+        '</div>' +
+        '<p style="font-size:.85rem;margin-bottom:4px"><strong>Årsak:</strong> ' + e(r.reason) + '</p>' +
+        (r.detail ? '<p style="font-size:.82rem;color:var(--muted);margin-bottom:6px;background:var(--warm);padding:6px 10px;border-radius:6px">' + e(r.detail) + '</p>' : '') +
+        '<p style="font-size:.78rem;color:var(--muted);margin-bottom:6px">Rapportert av: <strong>' + e(r.reporter_name) + '</strong> · ' + e(r.reported_email) + '</p>' +
+        networkHtml +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+        '<button class="btn btn-ghost btn-sm" onclick="adminTrustAction(\'' + r.reported_id + '\',\'dismiss_report\',\'' + r.id + '\')">✓ Avvis rapport</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:#E67E22" onclick="adminTrustAction(\'' + r.reported_id + '\',\'suspend\',null)">⏸ Suspender</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="adminTrustAction(\'' + r.reported_id + '\',\'ban\',null)">🚫 Bannlys</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:var(--sage)" onclick="adminTrustAction(\'' + r.reported_id + '\',\'restore\',null)">↩️ Gjenopprett</button>' +
+        '</div></div>';
+    }).join('');
+  } catch(err) { el.innerHTML = '<div class="card" style="color:#C0392B">' + e(err.message) + '</div>'; }
+}
+
+async function loadPendingUsers() {
+  var el = document.getElementById('admin-pending-list');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    var users = await api('GET', '/admin/pending-users');
+    if (!users.length) { el.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--muted)">✅ Ingen nye brukere venter</div>'; return; }
+    el.innerHTML = users.map(function(u) {
+      var statusColor = u.trust_status === 'vouched' ? 'var(--sage)' : '#E8C06A';
+      return '<div class="card" style="margin-bottom:10px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+        avatarEl(u.avatar, u.name, 40) +
+        '<div style="flex:1"><div style="font-weight:600">' + e(u.name) + '</div>' +
+        '<div style="font-size:.8rem;color:var(--muted)">' + e(u.email) + ' · Registrert ' + timeAgo(u.created_at) + '</div>' +
+        (u.voucher_name ? '<div style="font-size:.78rem;color:var(--sage)">🤝 Gått god for av: ' + e(u.voucher_name) + '</div>' : '') +
+        '</div>' +
+        '<span style="font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:10px;background:var(--warm);color:' + statusColor + '">' + e(u.trust_status) + '</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px">' +
+        '<button class="btn btn-sage btn-sm" onclick="adminTrustAction(\'' + u.id + '\',\'approve\',null)">✅ Aktiver konto</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="adminTrustAction(\'' + u.id + '\',\'ban\',null)">🚫 Avvis</button>' +
+        '</div></div>';
+    }).join('');
+  } catch(err) { el.innerHTML = '<div class="card" style="color:#C0392B">' + e(err.message) + '</div>'; }
+}
+
+async function adminTrustAction(userId, action, reportId) {
+  var reason = null;
+  if (action === 'suspend') { reason = prompt('Begrunnelse for suspensjon:'); if (!reason) return; }
+  if (action === 'ban') { if (!confirm('Bannlyse denne brukeren permanent?')) return; }
+  try {
+    if (action === 'dismiss_report' && reportId) {
+      await api('POST', '/admin/reports/' + reportId + '/dismiss');
+      toast('Rapport avvist.');
+    } else {
+      await api('POST', '/admin/users/' + userId + '/trust', { action, reason });
+      toast('✅ Handling utført!');
+    }
+    loadAdminReports();
+    loadPendingUsers();
+  } catch(err) { toast(err.message, true); }
+}
+
+
+
+async function loadAdminFlagged() {
+  var el = document.getElementById('admin-flagged-list');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    var posts = await api('GET', '/admin/flagged');
+    if (!posts.length) { el.innerHTML = '<div class="card" style="text-align:center;padding:32px;color:var(--muted)">✅ Ingen flaggede annonser</div>'; return; }
+    el.innerHTML = posts.map(function(p) {
+      var reasons = (p.flag_reasons||[]).map(function(r){ return '<span class="flag-reason">' + e(r) + '</span>'; }).join('');
+      return '<div class="card" style="margin-bottom:10px">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:var(--terra);font-weight:700">⚠️</span>' +
+        '<span style="font-weight:600">' + e(p.title) + '</span>' +
+        '<span style="font-size:.78rem;color:var(--muted);margin-left:auto">' + e(p.author_name||'') + ' · ' + timeAgo(p.created_at) + '</span></div>' +
+        '<div style="margin-bottom:8px">' + reasons + '</div>' +
+        '<p style="font-size:.85rem;color:var(--muted);background:var(--warm);padding:8px;border-radius:6px;max-height:80px;overflow:hidden">' + e((p.body||'').slice(0,200)) + '</p>' +
+        '<div style="display:flex;gap:8px;margin-top:10px">' +
+        '<button class="btn btn-sage btn-sm" onclick="adminApproveFlagged(\'' + p.id + '\')">✅ Godkjenn</button>' +
+        '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="adminRemoveFlagged(\'' + p.id + '\',\'' + e(p.title) + '\')">🗑️ Fjern</button></div></div>';
+    }).join('');
+  } catch(err) { el.innerHTML = '<div class="card" style="color:#C0392B">' + e(err.message) + '</div>'; }
+}
+
+async function adminApproveFlagged(id) {
+  try { await api('POST','/admin/flagged/'+id+'/approve'); toast('Godkjent!'); loadAdminFlagged(); }
+  catch(err) { toast(err.message,true); }
+}
+
+async function adminRemoveFlagged(id, title) {
+  if (!confirm('Fjerne "'+title+'"?')) return;
+  try { await api('POST','/admin/flagged/'+id+'/remove'); toast('Fjernet.'); loadAdminFlagged(); }
+  catch(err) { toast(err.message,true); }
+}
+
+// Lab admin
+function buildLabHtml(s) {
+  var files  = s.files || [];
+  var wrong  = files.filter(function(f){ return !f.ok; });
+  var allOk  = wrong.length === 0 && files.length > 0;
+  var syncVer = s.syncVersion || null;
+  var statusTxt = allOk ? ('✅ Alle synkronisert' + (syncVer ? ' (' + syncVer + ')' : '')) : ('⚠️ ' + wrong.length + ' fil(er) ikke synkronisert');
+  var fileRows = files.map(function(f) {
+    var st  = !f.sha256 ? 'missing' : f.ok ? 'ok' : 'wrong';
+    var bg  = st==='missing'?'#fff0f0':st==='ok'?'#f0faf0':'#fff8e8';
+    var bdr = st==='missing'?'#f5c6cb':st==='ok'?'#c3e6cb':'#ffd580';
+    var ico = st==='missing'?'❌':st==='ok'?'✅':'⚠️';
+    var vc  = st==='ok'?'var(--sage)':st==='wrong'?'var(--terra)':'#C0392B';
+    var dt  = f.modified ? new Date(f.modified*1000).toLocaleString('no',{dateStyle:'short',timeStyle:'short'}) : '';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:'+bg+';border:1px solid '+bdr+';border-radius:6px;padding:5px 10px;margin-bottom:3px">' +
+      '<div style="display:flex;align-items:center;gap:6px"><span>'+ico+'</span><span style="font-family:monospace;font-size:.78rem;font-weight:600">'+e(f.name)+'</span></div>' +
+      '<div style="font-size:.72rem;color:#555;text-align:right"><span style="font-weight:700;color:'+vc+'">'+(f.version?'v'+f.version:'–')+'</span>'+(f.sha256?' · <span style="font-family:monospace">'+f.sha256+'</span>':' · mangler')+(dt?'<br><span style="color:var(--muted)">'+dt+'</span>':'')+'</div></div>';
+  }).join('');
+
+  return '<div class="card" style="margin-bottom:14px">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
+    '<h3 style="font-size:1rem;color:var(--sage)">🧪 Filstatus</h3>' +
+    '<span style="font-size:.72rem;font-family:monospace;background:var(--warm);padding:2px 7px;border-radius:6px;color:var(--muted)" title="Kjørende versjon (auto-hash)">' + e(s.version) + '</span>' +
+    '<span style="font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:10px;background:'+(allOk?'#EBF5EC':'#FEF0E8')+';color:'+(allOk?'var(--sage)':'var(--terra)')+'">' + statusTxt + '</span>' +
+    '<span style="font-size:.78rem;color:var(--muted)">Node '+e(s.node)+' · '+Math.floor(s.uptime/60)+' min</span></div>' +
+    fileRows + '</div>' +
+    '<div class="card" style="margin-bottom:14px">' +
+    '<h3 style="font-size:.9rem;margin-bottom:10px">📁 Last opp filer</h3>' +
+    '<div id="lab-dz" style="border:2px dashed var(--sage);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;background:#f5faf5" onclick="document.getElementById(\'lab-fi\').click()" ondragover="event.preventDefault();this.style.background=\'#e8f5e8\'" ondragleave="this.style.background=\'#f5faf5\'" ondrop="labDrop(event)">' +
+    '<div style="font-size:1.8rem;margin-bottom:6px">📂</div><div style="color:var(--sage);font-weight:700">Dra filer hit eller klikk</div>' +
+    '<div style="font-size:.75rem;color:var(--muted)">server.js · db.js · routes/*.js · public/index.html · .zip</div></div>' +
+    '<input type="file" id="lab-fi" multiple accept=".js,.html,.json,.zip" style="display:none" onchange="labFilesSelected(this.files)">' +
+    '<div id="lab-fl" style="margin-top:10px"></div>' +
+    '<div style="display:flex;gap:8px;margin-top:10px">' +
+    '<button class="btn btn-ghost btn-sm" onclick="labClearFiles()">✕ Tøm</button>' +
+    '<button class="btn btn-sage" id="lab-ub" style="flex:1" onclick="labUpload()">📤 Last opp</button></div>' +
+    '<div id="lab-us" style="margin-top:10px"></div></div>' +
+    '<div class="card" style="margin-bottom:14px">' +
+    '<h3 style="font-size:.9rem;margin-bottom:10px">🚀 Publiser til GitHub</h3>' +
+    '<p style="font-size:.82rem;color:var(--muted);margin-bottom:10px">Laster alle filer opp til GitHub. Prod-instansen kan deretter hente oppdateringen.</p>' +
+    '<div class="form-group"><label style="font-size:.8rem">Endringslogg</label><textarea id="lab-cl" placeholder="Hva ble endret?" style="min-height:60px"></textarea></div>' +
+    '<p style="font-size:.78rem;color:var(--muted);margin-bottom:6px">Versjon beregnes automatisk fra filinnhold ved publisering.</p>' +
+    '<button class="btn btn-primary" style="width:100%" onclick="labPublish()">🚀 Publiser ny versjon til GitHub</button>' +
+    '<div id="lab-ps" style="margin-top:10px"></div></div>' +
+    '<div class="card">' +
+    '<h3 style="font-size:.9rem;margin-bottom:10px">🔄 Restart server</h3>' +
+    '<button class="btn btn-ghost" style="width:100%;border-color:var(--sky);color:var(--sky)" onclick="labRestart()">🔄 Restart</button>' +
+    '<div id="lab-rs" style="margin-top:8px"></div></div>';
+}
+
+// Lab file handling
+var _labFiles = [];
+
+function labDrop(ev) { ev.preventDefault(); document.getElementById('lab-dz').style.background='#f5faf5'; labFilesSelected(ev.dataTransfer.files); }
+
+function labFilesSelected(fileList) {
+  var ALLOWED = ['server.js','db.js','utils.js','session-store.js','content-filter.js','package.json','auth.js','posts.js','profile.js','messages.js','index.html'];
+  Array.from(fileList).forEach(function(f) {
+    if (f.name.toLowerCase().endsWith('.zip')) { _labFiles=_labFiles.filter(function(x){return !x.name.toLowerCase().endsWith('.zip');}); _labFiles.push(f); }
+    else if (ALLOWED.includes(f.name)) { _labFiles=_labFiles.filter(function(x){return x.name!==f.name;}); _labFiles.push(f); }
+    else toast('Ikke tillatt: '+f.name, true);
+  });
+  labRenderFiles();
+}
+
+function labRenderFiles() {
+  var el = document.getElementById('lab-fl');
+  if (!el) return;
+  el.innerHTML = _labFiles.map(function(f){
+    var icon = f.name.endsWith('.zip')?'🗜️':f.name.endsWith('.js')?'📜':'🌐';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;background:var(--warm);border-radius:6px;padding:5px 10px;margin-bottom:4px">' +
+      '<span style="font-size:.83rem;font-weight:600">' + icon + ' ' + e(f.name) + ' <span style="color:var(--muted);font-weight:400">' + (f.size/1024).toFixed(0) + ' KB</span></span>' +
+      '<button onclick="labRemoveFile(\'' + e(f.name) + '\')" style="background:none;border:none;cursor:pointer;color:var(--muted)">✕</button></div>';
+  }).join('');
+}
+
+function labRemoveFile(name) { _labFiles=_labFiles.filter(function(f){return f.name!==name;}); labRenderFiles(); }
+function labClearFiles() { _labFiles=[]; labRenderFiles(); var inp=document.getElementById('lab-fi'); if(inp) inp.value=''; }
+
+async function labUpload() {
+  if (!_labFiles.length) { toast('Velg filer først', true); return; }
+  var btn=document.getElementById('lab-ub'), status=document.getElementById('lab-us');
+  if (btn) btn.disabled=true;
+  if (status) status.innerHTML='<div style="color:var(--sky);font-size:.82rem">⏳ Laster opp…</div>';
+  try {
+    var fd=new FormData();
+    _labFiles.forEach(function(f){
+      var isRoute=['auth.js','posts.js','profile.js','messages.js'].includes(f.name);
+      var field=isRoute?'routes/'+f.name:f.name==='index.html'?'public/index.html':f.name;
+      fd.append(field,f,f.name);
+    });
+    var r=await fetch('/api/lab/upload',{method:'POST',body:fd,credentials:'same-origin'});
+    var d=await r.json();
+    if (!r.ok) throw new Error(d.error||d.err);
+    var list=(d.uploaded||[]).map(function(f){return '<div style="font-size:.8rem;color:var(--sage)">✅ '+e(f.name)+'</div>';}).join('');
+    if (status) status.innerHTML='<div style="background:#f0faf0;border:1px solid var(--sage);border-radius:6px;padding:8px 12px"><strong style="color:var(--sage)">'+e(d.message)+'</strong>'+list+'</div>';
+    labClearFiles();
+  } catch(err) { if(status) status.innerHTML='<div style="color:#C0392B;font-size:.82rem">❌ '+e(err.message)+'</div>'; }
+  if (btn) btn.disabled=false;
+}
+
+async function labPublish() {
+  var changelog=document.getElementById('lab-cl')&&document.getElementById('lab-cl').value.trim();
+  var status=document.getElementById('lab-ps');
+  if (status) status.innerHTML='<div style="color:var(--sky);font-size:.82rem">⏳ Publiserer til GitHub…</div>';
+  try {
+    var d=await api('POST','/lab/publish',{changelog:changelog});
+    var steps=(d.steps||[]).map(function(s){return '<div style="font-size:.8rem;color:var(--sage)">'+e(s)+'</div>';}).join('');
+    if (status) status.innerHTML='<div style="background:#f0faf0;border:1px solid var(--sage);border-radius:6px;padding:10px"><strong style="color:var(--sage)">'+e(d.message)+'</strong><div style="font-family:monospace;font-size:.75rem;margin-top:4px;color:var(--muted)">Versjon: '+e(d.version||'')+'</div>'+steps+'</div>';
+  } catch(err) { if(status) status.innerHTML='<div style="color:#C0392B;font-size:.82rem">❌ '+e(err.message)+'</div>'; }
+}
+
+async function labRestart() {
+  var status=document.getElementById('lab-rs');
+  if (!confirm('Restarte serveren?')) return;
+  if (status) status.innerHTML='<div style="color:var(--sky);font-size:.82rem">⏳ Restarter…</div>';
+  try {
+    var d=await api('POST','/lab/restart');
+    if (status) status.innerHTML='<div style="color:var(--sage);font-size:.82rem">✅ '+e(d.message)+' Laster om om 6 sek…</div>';
+    setTimeout(function(){location.reload();},6000);
+  } catch(err) { if(status) status.innerHTML='<div style="color:#C0392B;font-size:.82rem">❌ '+e(err.message)+'</div>'; }
+}
+
+// ── Version history / rollback ───────────────────────────────────────────────
+async function openVersionHistory() {
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  title.textContent = '📋 Versjonshistorikk';
+  body.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner"></div></div>';
+  overlay.classList.add('open');
+  try {
+    var d = await api('GET', '/update/check');
+    var releases = d.releases || [];
+    if (!releases.length) {
+      body.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Ingen versjoner publisert til GitHub ennå.</p>';
+      return;
+    }
+    body.innerHTML = '<p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Kjørende versjon: <strong>' + d.current + '</strong></p>' +
+      releases.map(function(r, i) {
+        var isCurrent = r.version === d.current;
+        var date = r.published_at ? new Date(r.published_at).toLocaleString('no', {dateStyle:'short', timeStyle:'short'}) : '';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:' + (isCurrent ? '#EBF5EC' : 'var(--white)') + '">' +
+          '<div style="flex:1">' +
+          '<div style="font-weight:600;font-family:monospace;font-size:.85rem">' + r.version + (isCurrent ? ' <span style="color:var(--sage);font-size:.75rem">← kjører nå</span>' : '') + '</div>' +
+          (r.changelog ? '<div style="font-size:.82rem;color:var(--muted)">' + e(r.changelog) + '</div>' : '') +
+          '<div style="font-size:.75rem;color:var(--muted)">' + date + '</div>' +
+          '</div>' +
+          (!isCurrent ? '<button class="btn btn-ghost btn-sm" data-ver="' + r.version + '" onclick="applyUpdate(this.getAttribute(\'data-ver\'))">↩️ Rull tilbake</button>' : '') +
+          '</div>';
+      }).join('');
+  } catch(err) {
+    body.innerHTML = '<p style="color:#C0392B">' + e(err.message) + '</p>';
+  }
+}
+
+// ── Admin-on-demand ──────────────────────────────────────────────────────────
+var _adminTimerInterval = null;
+
+function checkAdminSession() {
+  // Check if user has a pending approved request they can activate
+  api('GET', '/admin-request/pending').then(function(reqs) {
+    // handled in access tab
+  }).catch(function(){});
+  // Check for approved-but-not-activated requests
+  if (state.user && state.user.role === 'admin') {
+    // Show timer if temp admin (session.adminUntil)
+    startAdminTimer();
+  }
+}
+
+function startAdminTimer() {
+  if (_adminTimerInterval) clearInterval(_adminTimerInterval);
+  _adminTimerInterval = setInterval(function() {
+    // Get current session info
+    api('GET', '/auth/me').then(function(u) {
+      // Server will return role=user if expired
+      if (u.role !== 'admin' && state.user && state.user.role === 'admin') {
+        state.user.role = 'user';
+        document.getElementById('admin-btn').style.display = 'none';
+        document.getElementById('dd-admin-timer').style.display = 'none';
+        toast('Admin-tilgangen din har utløpt.');
+        clearInterval(_adminTimerInterval);
+      }
+    }).catch(function(){});
+  }, 30000);
+}
+
+function openRequestAdmin() {
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  title.textContent = '🔐 Be om admin-tilgang';
+  body.innerHTML =
+    '<p style="font-size:.88rem;color:var(--muted);margin-bottom:16px">Be om midlertidig admin-tilgang i 4 timer. En annen admin må godkjenne.</p>' +
+    '<div class="form-group"><label>Begrunnelse (valgfritt)</label><textarea id="req-reason" placeholder="F.eks. behandle innmeldt misbruk fra bruker X…" style="min-height:80px"></textarea></div>' +
+    '<div id="m-err" class="form-err"></div>' +
+    '<button class="btn btn-primary" style="width:100%" onclick="doRequestAdmin()">Send forespørsel</button>';
+  overlay.classList.add('open');
+}
+
+async function doRequestAdmin() {
+  var reason = document.getElementById('req-reason').value.trim();
+  try {
+    await api('POST', '/admin-request', { reason: reason });
+    closeModal();
+    toast('Forespørsel sendt til andre admins! Du får varsel når den er godkjent.');
+  } catch(err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+async function loadAdminAccess() {
+  await Promise.all([loadAccessRequests(), loadAccessLog()]);
+}
+
+async function loadAccessRequests() {
+  var el = document.getElementById('admin-access-requests');
+  if (!el) return;
+  try {
+    var reqs = await api('GET', '/admin-request/pending');
+    if (!reqs.length) {
+      el.innerHTML = '<div class="card" style="text-align:center;padding:24px;color:var(--muted)">✅ Ingen ventende forespørsler</div>';
+      return;
+    }
+    el.innerHTML = reqs.map(function(r) {
+      var isSelf = state.user && r.user_id === state.user.id;
+      return '<div class="card" style="margin-bottom:10px">' +
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+        avatarEl(r.requester_avatar, r.requester_name, 36) +
+        '<div><div style="font-weight:600">' + e(r.requester_name) + '</div>' +
+        '<div style="font-size:.78rem;color:var(--muted)">' + timeAgo(r.created_at) + '</div></div></div>' +
+        (r.reason ? '<p style="font-size:.85rem;background:var(--warm);padding:8px;border-radius:6px;margin-bottom:8px">' + e(r.reason) + '</p>' : '') +
+        '<div style="display:flex;gap:8px">' +
+        (!isSelf ? '<button class="btn btn-sage btn-sm" onclick="approveAdminReq(\'' + r.id + '\')">✅ Godkjenn</button>' : '<span style="font-size:.8rem;color:var(--muted)">⏳ Venter på godkjenning fra annen admin</span>') +
+        (!isSelf ? '<button class="btn btn-ghost btn-sm" style="color:#C0392B" onclick="denyAdminReq(\'' + r.id + '\')">✕ Avslå</button>' : '') +
+        '</div></div>';
+    }).join('');
+  } catch(err) { el.innerHTML = '<p style="color:#C0392B">' + e(err.message) + '</p>'; }
+}
+
+async function loadAccessLog() {
+  var el = document.getElementById('admin-access-log');
+  if (!el) return;
+  try {
+    var log = await api('GET', '/admin-request/log');
+    if (!log.length) { el.innerHTML = '<div class="card" style="text-align:center;padding:24px;color:var(--muted)">Ingen handlinger logget ennå.</div>'; return; }
+    var actionColor = { ADMIN_APPROVED:'var(--sage)', ADMIN_DENIED:'#C0392B', ADMIN_ACTIVATED:'var(--sky)', ADMIN_EXPIRED:'var(--muted)' };
+    el.innerHTML = '<div class="card" style="padding:0;overflow:hidden"><table>' +
+      '<thead><tr><th>Handling</th><th>Utført av</th><th>Detalj</th><th>Tid</th></tr></thead><tbody>' +
+      log.map(function(l) {
+        var col = actionColor[l.action] || 'var(--text)';
+        return '<tr><td style="font-family:monospace;font-size:.78rem;color:' + col + ';font-weight:600">' + e(l.action) + '</td>' +
+          '<td style="font-size:.82rem">' + e(l.user_name) + '</td>' +
+          '<td style="font-size:.78rem;color:var(--muted)">' + e(l.detail||'') + '</td>' +
+          '<td style="font-size:.75rem;color:var(--muted);white-space:nowrap">' + timeAgo(l.created_at) + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
+  } catch(err) { el.innerHTML = '<p style="color:#C0392B">' + e(err.message) + '</p>'; }
+}
+
+async function approveAdminReq(id) {
+  try {
+    var d = await api('POST', '/admin-request/' + id + '/approve');
+    toast(d.message);
+    loadAdminAccess();
+  } catch(err) { toast(err.message, true); }
+}
+
+async function denyAdminReq(id) {
+  if (!confirm('Avslå forespørselen?')) return;
+  try { await api('POST', '/admin-request/' + id + '/deny'); toast('Avslått.'); loadAdminAccess(); }
+  catch(err) { toast(err.message, true); }
+}
+
+// Check notifications for approved admin requests
+async function checkNotificationsForAdminApproval() {
+  try {
+    var notifs = await api('GET', '/profile/me/notifications');
+    var approvedNotif = notifs.find(function(n){ return n.type === 'admin_approved' && !n.read; });
+    if (approvedNotif && approvedNotif.payload) {
+      var p = approvedNotif.payload;
+      toast('🔐 ' + p.approved_by + ' har godkjent din admin-forespørsel!');
+      // Show activate button
+      var dd = document.getElementById('user-dropdown');
+      if (dd) {
+        var btn = document.createElement('div');
+        btn.style.cssText = 'padding:10px 16px;cursor:pointer;font-size:.88rem;background:#EBF5EC;color:var(--sage);font-weight:600;border-bottom:1px solid var(--border)';
+        btn.textContent = '🔐 Aktiver admin-tilgang (4t)';
+        btn.onclick = function() { activateAdminAccess(approvedNotif.payload.request_id); closeUserMenu(); };
+        dd.insertBefore(btn, dd.firstChild);
+      }
+    }
+  } catch {}
+}
+
+async function activateAdminAccess(requestId) {
+  if (!requestId) { toast('Ingen forespørsels-ID funnet', true); return; }
+  try {
+    var d = await api('POST', '/admin-request/' + requestId + '/activate');
+    toast('✅ ' + d.message);
+    state.user.role = 'admin';
+    document.getElementById('admin-btn').style.display = '';
+    startAdminTimer();
+  } catch(err) { toast(err.message, true); }
+}
+
+// ── Norge fylker/kommuner ────────────────────────────────────────────────────
+var NORWAY = {
+  'digital':              { name: '💻 Digital hjelp', kommuner: [] },
+  'Agder':                { name: 'Agder', kommuner: ['Arendal','Birkenes','Bygland','Bykle','Evje og Hornnes','Farsund','Flekkefjord','Froland','Gjerstad','Grimstad','Iveland','Kristiansand','Kvinesdal','Lillesand','Lindesnes','Lyngdal','Risør','Sirdal','Valle','Vegårshei','Vennesla','Åseral'] },
+  'Innlandet':            { name: 'Innlandet', kommuner: ['Alvdal','Dovre','Eidskog','Elverum','Engerdal','Etnedal','Folldal','Gausdal','Gjøvik','Gran','Hamar','Kongsvinger','Lesja','Lillehammer','Lom','Nord-Aurdal','Nord-Fron','Os','Rendalen','Ringebu','Ringsaker','Sel','Skjåk','Stor-Elvdal','Sør-Aurdal','Sør-Fron','Trysil','Tynset','Vågå','Vestre Toten','Åmot','Åsnes','Østre Toten','Øyer'] },
+  'Møre og Romsdal':      { name: 'Møre og Romsdal', kommuner: ['Ålesund','Aukra','Aure','Averøy','Fjord','Giske','Gjemnes','Hareid','Herøy','Hustadvika','Kristiansund','Molde','Rauma','Sande','Smøla','Stranda','Sula','Sunndal','Surnadal','Sykkylven','Tingvoll','Ulstein','Vanylven','Vestnes','Volda','Ørsta'] },
+  'Nordland':             { name: 'Nordland', kommuner: ['Alstahaug','Andøy','Beiarn','Bindal','Bodø','Brønnøy','Dønna','Evenes','Fauske','Gildeskål','Grane','Hamarøy','Hattfjelldal','Herøy','Leirfjord','Lurøy','Lødingen','Meløy','Moskenes','Narvik','Nesna','Rana','Rødøy','Røst','Saltdal','Sortland','Steigen','Sømna','Sørfold','Træna','Vefsn','Vega','Vevelstad','Vågan','Værøy','Øksnes'] },
+  'Oslo':                 { name: 'Oslo', kommuner: ['Alna','Bjerke','Frogner','Gamle Oslo','Grorud','Grünerløkka','Nordre Aker','Nordstrand','Sagene','St. Hanshaugen','Stovner','Søndre Nordstrand','Ullern','Vestre Aker','Østensjø'] },
+  'Rogaland':             { name: 'Rogaland', kommuner: ['Bokn','Eigersund','Gjesdal','Haugesund','Hjelmeland','Hå','Karmøy','Kvitsøy','Lund','Randaberg','Sandnes','Sauda','Sokndal','Sola','Stavanger','Strand','Suldal','Time','Tysvær','Utsira','Vindafjord'] },
+  'Troms og Finnmark':    { name: 'Troms og Finnmark', kommuner: ['Alta','Balsfjord','Berlevåg','Dyrøy','Gamvik','Gratangen','Hammerfest','Harstad','Hasvik','Ibestad','Karasjok','Kautokeino','Kvæfjord','Kvænangen','Lavangen','Lebesby','Lenvik','Loppa','Lyngen','Målselv','Måsøy','Nesseby','Nordkapp','Porsanger','Salangen','Senja','Skjervøy','Skånland','Storfjord','Tana','Tjeldsund','Tromsø','Vadsø','Vardø','Sør-Varanger'] },
+  'Trøndelag':            { name: 'Trøndelag', kommuner: ['Flatanger','Frosta','Frøya','Grong','Hitra','Høylandet','Inderøy','Levanger','Lierne','Malvik','Melhus','Meråker','Midtre Gauldal','Namsos','Nærøysund','Oppdal','Orkland','Osen','Overhalla','Rennebu','Rindal','Røros','Røyrvik','Selbu','Snåsa','Steinkjer','Stjørdal','Trondheim','Tydal','Verdal'] },
+  'Vestfold og Telemark': { name: 'Vestfold og Telemark', kommuner: ['Bamble','Bø','Drangedal','Fyresdal','Hjartdal','Holmestrand','Horten','Kragerø','Kviteseid','Larvik','Nissedal','Nome','Notodden','Porsgrunn','Sandefjord','Seljord','Siljan','Skien','Tokke','Tønsberg','Vinje'] },
+  'Vestland':             { name: 'Vestland', kommuner: ['Alver','Askøy','Askvoll','Aurland','Austevoll','Austrheim','Bergen','Bjørnafjorden','Bremanger','Etne','Fedje','Fitjar','Fjaler','Gloppen','Gulen','Hyllestad','Høyanger','Kinn','Kvam','Lærdal','Luster','Masfjorden','Modalen','Osterøy','Samnanger','Sogndal','Stad','Stord','Stryn','Sunnfjord','Tysnes','Ullensvang','Ulvik','Vaksdal','Vik','Voss','Øygarden','Årdal'] },
+  'Viken':                { name: 'Viken', kommuner: ['Aremark','Asker','Aurskog-Høland','Bærum','Drammen','Eidsvoll','Enebakk','Flå','Flesberg','Fredrikstad','Gol','Halden','Hemsedal','Hol','Hole','Hurdal','Hvaler','Indre Østfold','Jevnaker','Kongsberg','Krødsherad','Lier','Lunner','Marker','Modum','Moss','Nannestad','Nes','Nesodden','Nittedal','Nore og Uvdal','Rakkestad','Rælingen','Råde','Sarpsborg','Sigdal','Skiptvet','Ullensaker','Vestby','Ås','Øvre Eiker'] },
+};
+
+var _locFilter = { fylke: '', kommune: '' };
+
+// ── Lab control (prod side) ───────────────────────────────────────────────────
+async function loadLabControl() {
+  var el = document.getElementById('lab-control-content');
+  if (!el) return;
+  el.innerHTML = '<div class="spinner"></div>';
+  try {
+    var d = await api('GET', '/lab-control/status');
+    var c = d.container;
+    var manifest = d.manifest;
+    var releases = manifest && manifest.releases || [];
+    var stateColor = c.state === 'running' ? 'var(--sage)' : '#C0392B';
+    var stateIcon  = c.state === 'running' ? '🟢' : '🔴';
+
+    var relRows = releases.map(function(r, i) {
+      var date = r.published_at ? new Date(r.published_at).toLocaleString('no', {dateStyle:'short', timeStyle:'short'}) : '';
+      return '<tr>' +
+        '<td style="font-family:monospace;font-size:.82rem;font-weight:600">' + e(r.version) + (i===0?' <span style="font-size:.72rem;color:var(--sage)">← siste</span>':'') + '</td>' +
+        '<td style="font-size:.82rem;color:var(--muted)">' + e(r.changelog||'–') + '</td>' +
+        '<td style="font-size:.78rem;color:var(--muted)">' + date + '</td>' +
+        '<td>' +
+        '<button class="btn btn-ghost btn-sm" data-ver="' + e(r.version) + '" onclick="deployToLab(this.dataset.ver)">↩️ Gjenopprett lab</button>' +
+        '</td></tr>';
+    }).join('');
+
+    el.innerHTML =
+      '<div class="card" style="margin-bottom:14px">' +
+      '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
+      '<h3 style="font-size:1rem">🧪 Lab-container</h3>' +
+      '<span style="font-size:.85rem;font-weight:700;color:' + stateColor + '">' + stateIcon + ' ' + e(c.state) + '</span>' +
+      '<span style="font-size:.78rem;color:var(--muted)">' + e(c.status) + ' · ID: ' + e(c.id) + '</span>' +
+      '<button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="restartLab()">🔄 Restart lab</button>' +
+      '<button class="btn btn-ghost btn-sm" onclick="loadLabControl()">↻ Oppdater</button>' +
+      '</div>' +
+      '<div style="font-size:.82rem;color:var(--muted)">Image: ' + e(c.image) + '</div>' +
+      '</div>' +
+
+      '<div class="card">' +
+      '<h3 style="font-size:.95rem;margin-bottom:12px">📋 Tilgjengelige versjoner på GitHub</h3>' +
+      (releases.length ? '<div class="card" style="padding:0;overflow:hidden"><table>' +
+      '<thead><tr><th>Versjon</th><th>Endringslogg</th><th>Publisert</th><th></th></tr></thead>' +
+      '<tbody>' + relRows + '</tbody></table></div>' :
+      '<p style="color:var(--muted);text-align:center;padding:20px">Ingen versjoner publisert til GitHub ennå.</p>') +
+      '<div id="lab-deploy-status" style="margin-top:12px"></div>' +
+      '</div>';
+
+  } catch(err) {
+    el.innerHTML = '<div class="card" style="color:#C0392B">' +
+      '<p>' + e(err.message) + '</p>' +
+      (err.message.includes('Portainer') ?
+        '<p style="font-size:.82rem;margin-top:8px;color:var(--muted)">Legg til PORTAINER_URL, PORTAINER_TOKEN, PORTAINER_LAB_CONTAINER i prod-stacken i Portainer.</p>' : '') +
+      '</div>';
+  }
+}
+
+async function restartLab() {
+  if (!confirm('Restarte lab-containeren?')) return;
+  try {
+    var d = await api('POST', '/lab-control/restart');
+    toast('✅ ' + d.message);
+    setTimeout(loadLabControl, 3000);
+  } catch(err) { toast(err.message, true); }
+}
+
+async function deployToLab(version) {
+  if (!confirm('Gjenopprette lab til versjon ' + version + '? Lab-containeren restarter automatisk og henter versjonen fra GitHub.')) return;
+  var status = document.getElementById('lab-deploy-status');
+  if (status) status.innerHTML = '<div style="color:var(--sky);font-size:.82rem">⏳ Sender gjenopprettingskommando…</div>';
+  try {
+    var d = await api('POST', '/lab-control/deploy', { version: version });
+    var steps = (d.steps||[]).map(function(s){ return '<div style="font-size:.8rem">'+e(s)+'</div>'; }).join('');
+    if (status) status.innerHTML = '<div style="background:#f0faf0;border:1px solid var(--sage);border-radius:6px;padding:10px"><strong style="color:var(--sage)">'+e(d.message)+'</strong>'+steps+'</div>';
+    setTimeout(loadLabControl, 5000);
+  } catch(err) {
+    if (status) status.innerHTML = '<div style="color:#C0392B;font-size:.82rem">❌ '+e(err.message)+'</div>';
+  }
+}
+
+// ── Trust & safety ───────────────────────────────────────────────────────────
+function openReportUser(userId, userName) {
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  title.textContent = '🚩 Rapporter ' + userName;
+  body.innerHTML = '<p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Rapporten sendes anonymt til admin-panelet og behandles manuelt. Ved alvorlige brudd kan kontoen bli suspendert automatisk.</p>' +
+    '<div class="form-group"><label>Årsak</label><select id="rep-reason">' +
+    '<option value="">Velg årsak…</option>' +
+    '<option value="spam">Spam eller reklame</option>' +
+    '<option value="misleading">Villedende informasjon</option>' +
+    '<option value="harassment">Trakassering eller trusler</option>' +
+    '<option value="fraud">Svindel eller utnyttelse</option>' +
+    '<option value="inappropriate">Upassende innhold</option>' +
+    '<option value="other">Annet</option>' +
+    '</select></div>' +
+    '<div class="form-group"><label>Detaljer (valgfritt)</label><textarea id="rep-detail" placeholder="Beskriv hva som skjedde…" style="min-height:80px"></textarea></div>' +
+    '<div id="m-err" class="form-err"></div>' +
+    '<button class="btn btn-primary" style="width:100%;background:#C0392B" onclick="submitReport(\'' + userId + '\')">Send rapport</button>';
+  overlay.classList.add('open');
+}
+
+async function submitReport(userId) {
+  var reason = document.getElementById('rep-reason').value;
+  var detail = document.getElementById('rep-detail').value;
+  if (!reason) { document.getElementById('m-err').textContent = 'Velg en årsak'; return; }
+  try {
+    await api('POST', '/report/user/' + userId, { reason, detail });
+    closeModal();
+    toast('Rapport sendt. Takk for at du bidrar til et trygt miljø.');
+  } catch(err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+function openVouchUser(userId, userName) {
+  var overlay = document.getElementById('modal-overlay');
+  var title   = document.getElementById('modal-title');
+  var body    = document.getElementById('modal-body');
+  title.textContent = '🤝 Gå god for ' + userName;
+  body.innerHTML = '<p style="font-size:.85rem;color:var(--muted);margin-bottom:14px">Ved å gå god for denne personen bekrefter du at du kjenner dem og stoler på at de vil bidra positivt til Hjelpetorget.</p>' +
+    '<div class="form-group"><label>Notat (valgfritt)</label><textarea id="vouch-note" placeholder="Hvordan kjenner du denne personen?…" style="min-height:70px"></textarea></div>' +
+    '<div id="m-err" class="form-err"></div>' +
+    '<button class="btn btn-sage" style="width:100%" onclick="submitVouch(\'' + userId + '\')">🤝 Gå god for ' + userName + '</button>';
+  overlay.classList.add('open');
+}
+
+async function submitVouch(userId) {
+  var note = document.getElementById('vouch-note').value;
+  try {
+    var d = await api('POST', '/vouch/' + userId, { note });
+    closeModal();
+    toast('✅ ' + d.message);
+  } catch(err) { document.getElementById('m-err').textContent = err.message; }
+}
+
+// Show trust status banner for pending users
+async function checkTrustStatus() {
+  if (!state.user) return;
+  var status = state.user.trust_status;
+  if (status === 'pending') {
+    var banner = document.createElement('div');
+    banner.style.cssText = 'background:#FEF0E8;border-bottom:1px solid var(--terra);padding:10px 24px;text-align:center;font-size:.88rem;color:var(--brown)';
+    banner.innerHTML = '⏳ <strong>Kontoen din venter på godkjenning.</strong> Du kan søke om hjelp, men ikke tilby tjenester ennå. Be en eksisterende bruker gå god for deg for å fremskynde prosessen.';
+    document.body.insertBefore(banner, document.getElementById('topbar'));
+  } else if (status === 'vouched') {
+    var banner = document.createElement('div');
+    banner.style.cssText = 'background:#EBF5EC;border-bottom:1px solid var(--sage);padding:10px 24px;text-align:center;font-size:.88rem;color:var(--brown)';
+    banner.innerHTML = '🤝 <strong>Noen har gått god for deg!</strong> Admin vil snart gjennomgå kontoen din.';
+    document.body.insertBefore(banner, document.getElementById('topbar'));
+  }
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────────
+boot();
+</script>
+</body>
+</html>
