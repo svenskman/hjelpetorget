@@ -4,6 +4,11 @@
   "changelog": "",
   "releases": [
     {
+      "version": "20260329-31a1d43e",
+      "published_at": "2026-03-29T21:42:51.429Z",
+      "changelog": ""
+    },
+    {
       "version": "20260329-cac598b8",
       "published_at": "2026-03-29T21:19:25.231Z",
       "changelog": ""
@@ -14,5 +19,5 @@
       "changelog": ""
     }
   ],
-  "current": "20260329-cac598b8"
+  "current": "20260329-31a1d43e"
 }
