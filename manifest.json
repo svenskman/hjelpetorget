@@ -4,6 +4,11 @@
   "changelog": "",
   "releases": [
     {
+      "version": "20260330-1c26c122",
+      "published_at": "2026-03-30T10:50:03.120Z",
+      "changelog": "Ryddet opp i Admin konsollet, Hade dobbel oppføringer."
+    },
+    {
       "version": "20260330-3214e619",
       "published_at": "2026-03-30T10:46:21.055Z",
       "changelog": "Redigering av Områder"
@@ -22,12 +27,7 @@
       "version": "20260330-b6a15244",
       "published_at": "2026-03-30T00:47:42.614Z",
       "changelog": ""
-    },
-    {
-      "version": "20260329-6b8cb6af",
-      "published_at": "2026-03-29T22:17:21.248Z",
-      "changelog": ""
     }
   ],
-  "current": "20260330-3214e619"
+  "current": "20260330-1c26c122"
 }
