@@ -4,6 +4,11 @@
   "changelog": "",
   "releases": [
     {
+      "version": "20260331-57a4cbda",
+      "published_at": "2026-03-31T09:44:24.888Z",
+      "changelog": "Kalender og viktig info i ny annonse"
+    },
+    {
       "version": "20260331-d0e7bee8",
       "published_at": "2026-03-31T08:26:15.727Z",
       "changelog": "Brukeravtale funksjon"
@@ -22,12 +27,7 @@
       "version": "20260330-3214e619",
       "published_at": "2026-03-30T10:46:21.055Z",
       "changelog": "Redigering av Områder"
-    },
-    {
-      "version": "20260330-33f70ff9",
-      "published_at": "2026-03-30T10:30:00.577Z",
-      "changelog": "Rettelse i Kategori"
     }
   ],
-  "current": "20260331-d0e7bee8"
+  "current": "20260331-57a4cbda"
 }
