@@ -4,6 +4,11 @@
   "changelog": "",
   "releases": [
     {
+      "version": "20260407-8061bcfa",
+      "published_at": "2026-04-07T22:41:37.670Z",
+      "changelog": ""
+    },
+    {
       "version": "20260331-57a4cbda",
       "published_at": "2026-03-31T09:44:24.888Z",
       "changelog": "Kalender og viktig info i ny annonse"
@@ -22,12 +27,7 @@
       "version": "20260330-1c26c122",
       "published_at": "2026-03-30T10:50:03.120Z",
       "changelog": "Ryddet opp i Admin konsollet, Hade dobbel oppføringer."
-    },
-    {
-      "version": "20260330-3214e619",
-      "published_at": "2026-03-30T10:46:21.055Z",
-      "changelog": "Redigering av Områder"
     }
   ],
-  "current": "20260331-57a4cbda"
+  "current": "20260407-8061bcfa"
 }
