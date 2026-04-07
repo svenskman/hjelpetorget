@@ -4,6 +4,11 @@
   "changelog": "",
   "releases": [
     {
+      "version": "20260407-135774da",
+      "published_at": "2026-04-07T22:54:28.615Z",
+      "changelog": "Export av installations media"
+    },
+    {
       "version": "20260407-2a7bc7ec",
       "published_at": "2026-04-07T22:47:40.837Z",
       "changelog": "Endrings ruta vid deployment."
@@ -22,12 +27,7 @@
       "version": "20260331-d0e7bee8",
       "published_at": "2026-03-31T08:26:15.727Z",
       "changelog": "Brukeravtale funksjon"
-    },
-    {
-      "version": "20260331-063f7376",
-      "published_at": "2026-03-31T07:31:31.664Z",
-      "changelog": ""
     }
   ],
-  "current": "20260407-2a7bc7ec"
+  "current": "20260407-135774da"
 }
